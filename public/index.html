@@ -12,17 +12,17 @@
 :root{
   --bg:#F1F5F3; --surface:#FFFFFF; --ink:#13231F; --muted:#56665F; --line:#D3DDD8;
   --accent:#0A6B63; --accent-ink:#FFFFFF; --soft:#E1EDE9; --pollen:#C98F0E; --pollen-soft:#F6EBCF;
-  --warn:#B4441F;
+  --warn:#B4441F; --cover-accent:#5FD3C3; --cover-line:rgba(255,255,255,.16); --cover-on-accent:#06201C;
   --f-display:"Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
   --f-body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
   --f-mono:"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
   --bg:#0D1614; --surface:#14201D; --ink:#E4EDE9; --muted:#9BACA5; --line:#27352F;
-  --accent:#45C1B2; --accent-ink:#06201C; --soft:#1A2E2A; --pollen:#E8B743; --pollen-soft:#3A301A; --warn:#F08A62; color-scheme:dark }}
+  --accent:#45C1B2; --accent-ink:#06201C; --soft:#1A2E2A; --pollen:#E8B743; --pollen-soft:#3A301A; --warn:#F08A62; --cover-accent:#0A6B63; --cover-line:rgba(0,0,0,.14); --cover-on-accent:#FFFFFF; color-scheme:dark }}
 :root[data-theme="dark"]{
   --bg:#0D1614; --surface:#14201D; --ink:#E4EDE9; --muted:#9BACA5; --line:#27352F;
-  --accent:#45C1B2; --accent-ink:#06201C; --soft:#1A2E2A; --pollen:#E8B743; --pollen-soft:#3A301A; --warn:#F08A62; color-scheme:dark }
+  --accent:#45C1B2; --accent-ink:#06201C; --soft:#1A2E2A; --pollen:#E8B743; --pollen-soft:#3A301A; --warn:#F08A62; --cover-accent:#0A6B63; --cover-line:rgba(0,0,0,.14); --cover-on-accent:#FFFFFF; color-scheme:dark }
 
 *{box-sizing:border-box}
 [hidden]{display:none!important}
@@ -217,6 +217,67 @@ tr:last-child td{border-bottom:0}
 .embedv.tt{aspect-ratio:9/17}
 .stage .embed16{max-height:62vh;aspect-ratio:16/9;width:auto}
 @media (max-width:600px){ body{font-size:16px} .stage-bar .hide-sm{display:none} .crow{grid-template-columns:90px 1fr auto} }
+
+/* íconos y portadas */
+.ico{width:28px;height:28px;flex:none;display:block}
+.ico.sm{width:18px;height:18px;display:inline-block;vertical-align:-3px}
+.chips{list-style:none;padding:0;margin:18px 0 0;display:flex;flex-wrap:wrap;gap:6px}
+.chips li{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:4px 11px 4px 8px;font-size:.84rem;color:var(--muted);background:var(--surface)}
+.chips .ico{color:var(--accent)}
+.slide.cover{padding:clamp(22px,4.5vw,48px);overflow:hidden;position:relative}
+.slide.cover::after{content:"";position:absolute;right:-120px;top:-120px;width:360px;height:360px;border-radius:50%;border:1px solid var(--cover-line);pointer-events:none}
+.cv-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:clamp(20px,4vw,48px);align-items:center;position:relative;z-index:1}
+.cv-text{min-width:0}
+.slide.cover .from{position:absolute;top:clamp(14px,2.4vw,24px);right:clamp(14px,2.4vw,24px);z-index:2}
+.slide.cover .shead{padding-right:150px}
+.cv-num{font-family:var(--f-mono);font-size:.9rem;letter-spacing:.2em;color:var(--cover-accent);margin:14px 0 6px;display:flex;align-items:center;gap:12px}
+.cv-num::after{content:"";height:1px;width:64px;background:var(--cover-accent)}
+.slide.cover h2{font-size:clamp(2.1rem,5vw,3.6rem);font-weight:800;margin-bottom:.35em}
+.slide.cover .lead{color:inherit;opacity:.88;max-width:52ch}
+.cv-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px 22px;margin:22px 0 0;padding-top:16px;border-top:1px solid var(--cover-line)}
+.cv-meta dt{font-family:var(--f-mono);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;opacity:.65}
+.cv-meta dd{margin:2px 0 0;font-size:.9rem}
+.cv-join{margin:18px 0 0;font-size:.88rem;opacity:.85;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.cv-join .ico{color:var(--cover-accent)}
+.cv-tiles{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.cv-tiles li{aspect-ratio:1/1;border:1px solid var(--cover-line);border-radius:14px;display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;padding:clamp(10px,1.4vw,16px);min-width:0}
+.cv-tiles .ico{width:clamp(24px,3vw,34px);height:clamp(24px,3vw,34px);color:var(--cover-accent)}
+.cv-tiles span{font-size:clamp(.72rem,1.1vw,.85rem);line-height:1.2;opacity:.9;overflow-wrap:anywhere}
+.cv-tiles li.hl{background:var(--cover-accent);border-color:var(--cover-accent);color:var(--cover-on-accent)}
+.cv-tiles li.hl .ico{color:var(--cover-on-accent)}
+.stage .slide.cover{--cover-accent:var(--accent);--cover-line:var(--line);--cover-on-accent:var(--accent-ink)}
+.stage .slide.cover::after{display:none}
+.stage .cv-tiles li{aspect-ratio:auto;min-height:clamp(84px,14vh,140px)}
+@media (max-width:760px){.slide.cover .shead{padding-right:0;margin-top:22px}.cv-grid{grid-template-columns:1fr}.cv-tiles li{aspect-ratio:auto;min-height:78px}}
+
+/* impresión / PDF */
+@media print{
+ @page{size:A4 landscape;margin:12mm}
+ :root,:root[data-theme="dark"]{--bg:#FFFFFF;--surface:#FFFFFF;--ink:#13231F;--muted:#4E5E57;--line:#D3DDD8;--accent:#0A6B63;--accent-ink:#FFFFFF;--soft:#EEF4F1;--pollen:#9A6B06;--pollen-soft:#F8EFD6;--cover-accent:#5FD3C3;--cover-line:rgba(255,255,255,.22);--cover-on-accent:#06201C;color-scheme:light}
+ *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ body{background:#fff;font-size:12.5pt}
+ body::before,.top,.cactions,.toc,.from,.stage,.chips,.pmeta,.opt .pct,.opt .fill,.copy,.reset{display:none!important}
+ .wrap{max-width:none;padding:0}
+ .chead{padding:0 0 8mm;break-after:page}
+ .slides{gap:0;padding:0}
+ .slide{border:0;border-radius:0;padding:0;break-after:page;break-inside:auto}
+ .slide.cover{padding:14mm;border-radius:0;min-height:170mm;display:flex;align-items:center}
+ .slide.cover .cv-grid{width:100%}
+ .slide.cover .shead{padding-right:0}
+ .slide.cover .cv-tiles li{aspect-ratio:auto;min-height:26mm}
+ .poll{border-width:1px}
+ .poll .pref.hidden-ref{display:block}
+ .opt{min-height:0;padding:7px 12px;background:#fff}
+ .tw{overflow:visible}
+ table{min-width:0}
+ .media a{border:0;padding:0}
+ .media a::after,.src a::after{content:" (" attr(href) ")";font-weight:400;font-size:.8em;color:var(--muted);overflow-wrap:anywhere}
+ .src{break-inside:avoid}
+ .page section{break-inside:auto}
+ .case{break-inside:avoid}
+ img{max-height:90mm}
+}
+
 @media (prefers-reduced-motion:reduce){ *{transition:none!important;scroll-behavior:auto!important} }
 </style>
 </head>
@@ -303,6 +364,43 @@ const S={
   sora:["Ecosistema Startup · alternativas tras el cierre de Sora","https://ecosistemastartup.com/alternativas-a-sora-mejores-herramientas-ia-video-2026/"],
 };
 
+
+/* ---------- íconos (línea, 24×24) ---------- */
+const ICO={
+ globe:'<circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="3.8" ry="9"/><path d="M3.6 9h16.8M3.6 15h16.8"/>',
+ phone:'<rect x="6.5" y="2.5" width="11" height="19" rx="2.2"/><path d="M10.5 18.5h3"/>',
+ browser:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 8.5h18"/><path d="M6 6.3h.01M8.3 6.3h.01M10.6 6.3h.01" stroke-width="2.2"/><path d="M7 13h6M7 16h10"/>',
+ search:'<circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.3 15.3 20.5 20.5"/><path d="M10.5 7.6v5.8M7.6 10.5h5.8"/>',
+ mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 7 8.5 6 8.5-6"/>',
+ shield:'<path d="M12 3 19 6v5.5c0 4.6-3 7.9-7 9.5-4-1.6-7-4.9-7-9.5V6z"/><path d="m9 12 2.2 2.2L15.5 10"/>',
+ bot:'<path d="M4 5.5h16v10.5H10l-4.5 3.8V16H4z"/><path d="M9 10.8h.01M12 10.8h.01M15 10.8h.01" stroke-width="2.4"/>',
+ megaphone:'<path d="M3.5 10v4h3l7.5 4.5v-13L6.5 10z"/><path d="M17 9.2a3.8 3.8 0 0 1 0 5.6M19.4 7a7 7 0 0 1 0 10"/><path d="m6.5 14 1.2 5h2.6l-1-4.5"/>',
+ bars:'<path d="M3.5 20.5h17"/><path d="M7 20.5v-6M12 20.5V7.5M17 20.5v-10"/>',
+ play:'<rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M10 9.2v5.6l4.8-2.8z"/>',
+ mic:'<rect x="9" y="2.8" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5v3.5M9 21h6"/>',
+ layers:'<path d="m12 3.5 9 4.8-9 4.8-9-4.8z"/><path d="m3 12.4 9 4.8 9-4.8M3 16.4l9 4.8 9-4.8"/>',
+ users:'<circle cx="9" cy="8" r="3.4"/><path d="M2.8 20a6.2 6.2 0 0 1 12.4 0"/><circle cx="17" cy="9" r="2.5"/><path d="M16.5 13.8a5 5 0 0 1 4.8 5.2"/>',
+ leaf:'<path d="M5 19.5C5 11 11 5 20 4.5c-.3 9-6.4 15-15 15z"/><path d="m5 19.5 8.5-8.5"/>',
+ sparkle:'<path d="m11 3 1.9 5.1L18 10l-5.1 1.9L11 17l-1.9-5.1L4 10l5.1-1.9z"/><path d="M18.5 15.5v5M16 18h5"/>',
+ pen:'<path d="m4.5 19.5 1-4L16 5l3 3L8.5 18.5z"/><path d="m14 7 3 3"/>',
+ eye:'<path d="M2.5 12S6 6 12 6s9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6z"/><circle cx="12" cy="12" r="2.8"/>',
+ compass:'<circle cx="12" cy="12" r="9"/><path d="m15.6 8.4-2.2 5-5 2.2 2.2-5z"/>',
+ target:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2"/>',
+ hub:'<circle cx="12" cy="12" r="2.6"/><circle cx="5" cy="5" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/><path d="m10.1 10.1-3.7-3.7M13.9 10.1l3.7-3.7M10.1 13.9l-3.7 3.7M13.9 13.9l3.7 3.7"/>',
+ calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="M7.5 14h2M11 14h2M14.5 14h2M7.5 17.5h2M11 17.5h2" stroke-width="1.4"/>',
+ coins:'<ellipse cx="12" cy="6" rx="7" ry="2.6"/><path d="M5 6v4c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6V6M5 10v4c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6v-4M5 14v4c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6v-4"/>',
+ gauge:'<path d="M3.8 17a8.2 8.2 0 1 1 16.4 0"/><path d="m12 17 4-5"/><circle cx="12" cy="17" r="1.3"/>',
+ alert:'<path d="M12 3.5 2.5 20h19z"/><path d="M12 10v4.5M12 17.2h.01"/>',
+ file:'<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/>',
+ chat:'<path d="M4 5h16v11H9.5L5 19.5V16H4z"/><path d="M8 9.5h8M8 12.5h5"/>',
+};
+const ic=(n,cls)=>`<svg class="ico${cls?" "+cls:""}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICO[n]||""}</svg>`;
+const TOPICS={
+ c1:[["globe","Panorama"],["phone","Redes sociales"],["browser","Sitio web",1],["search","Búsqueda e IA"],["mail","Email"],["shield","Datos personales"],["bot","Chatbots"],["megaphone","Publicidad"],["bars","Medición"]],
+ c2:[["eye","Atención"],["chat","Conexión",1],["layers","Formatos"],["play","Video"],["mic","Podcast"],["users","Voces"],["leaf","Sostenibilidad"],["sparkle","IA"],["pen","Taller"]],
+ c3:[["compass","Diagnóstico"],["users","Públicos"],["target","Objetivos"],["hub","Ecosistema",1],["calendar","Contenidos"],["coins","Inversión"],["gauge","KPIs"],["alert","Riesgos"],["file","Trabajo final"]],
+};
+
 /* ---------- CONTENIDO ---------- */
 Object.assign(S,{
   aisearch:["Gupta · The State of AI Search in 2026 (estadísticas con fuente)","https://guptadeepak.com/state-of-ai-search-2026-statistics/"],
@@ -336,15 +434,15 @@ const ficha=(hoy,cambio,usa,ojo)=>`<div class="ficha"><div><h3>Hoy</h3>${hoy}</d
 const CLASSES=[
 { id:"c1", n:1, title:"El panorama digital en 2026", sub:"Dónde está la gente, cómo funciona cada plataforma, por qué el sitio web vuelve a ser el centro en la era de la búsqueda con IA y cómo se usa la publicidad digital de forma medible.",
 slides:[
- {cover:1,k:"Clase 1 de 3",t:"El panorama digital en 2026",b:`<div class="bignum">01</div><p class="lead">Plataformas, buscadores, sitios web y publicidad: el terreno donde hoy se juega cualquier estrategia de comunicación, también la de sostenibilidad.</p><p>Abre este sitio en tu celular: durante la clase vamos a votar en vivo.</p>`},
+ {cover:1,k:"Clase 1 de 3",t:"El panorama digital en 2026",lead:"Plataformas, buscadores, sitios web y publicidad: el terreno donde hoy se juega cualquier estrategia de comunicación, también la de sostenibilidad."},
  {k:"Hoja de ruta",t:"Qué vamos a ver hoy",b:steps(["Panorama","Usuarios en el mundo y en Chile"],["Redes, una por una","Qué son hoy y cómo cambiaron"],["El sitio web","Por qué es el eje de la estrategia"],["Búsqueda e IA","SEO, GEO y cómo te encuentra la gente"],["Experiencia y datos","Landing, usabilidad, privacidad, chatbots"],["Publicidad","Plataformas de anuncios y medición"])+`<p class="muted">El módulo: Clase 1 panorama y plataformas · Clase 2 contenidos · Clase 3 estrategia y trabajo final.</p>`},
  {k:"Encuesta",t:"Empecemos por ti",poll:{id:"c1_tiempo",q:"¿Cuánto tiempo al día pasas en redes sociales (sin contar trabajo)?",o:["Menos de 1 hora","Entre 1 y 2 horas","Entre 2 y 5 horas","Más de 5 horas","No tengo idea, y eso me preocupa"],ref:"En el estudio de Jelly (personas de 15 a 55 años en Chile), 62% declaró pasar entre 2 y 5 horas diarias y 16% más de 5 horas. El estudio SOUL 2025, que mide actividad, calcula 11 h 28 min semanales: autodeclarado y medido rara vez coinciden."},src:[S.jelly,S.soul]},
 
  /* ---- Panorama ---- */
  {k:"El mundo",t:"Las redes sociales ya son una supermayoría",b:foto(PX(3183196),"Personas jóvenes usando sus celulares","Foto referencial: Pexels")+stats(st("6.000 M","personas usan internet en el mundo"),st("5.660 M","identidades activas en redes sociales: 68,7% de la población"),st("6,75","plataformas distintas usa al mes un usuario típico"),st("16 h 13 min","a la semana en redes y video en línea (adultos)"))+`<p>En un año se sumaron 259 millones de nuevas identidades en redes (+4,8%). Y más de mil millones de personas ya usan herramientas de IA generativa cada mes.</p>`+call("Para la estrategia","La pregunta ya no es si tu público está en redes, sino en cuáles de sus casi siete plataformas, en qué momento y para qué."),src:[S.dr26,S.was26,S.lbb]},
- {k:"El mundo",t:"Las plataformas más grandes",b:chart([["Facebook",3.0,"Meta"],["WhatsApp",3.0,"Meta"],["Instagram",3.0,"Meta"],["YouTube",2.7],["TikTok",1.6,"sin dato oficial reciente"],["Snapchat",0.956],["Pinterest",0.631],["X",0.55],["Threads",0.5,"Meta"],["LinkedIn",0.416,"estimado activo"]],3.0,v=>v>=1?v.toFixed(1).replace(".",",")+" mil M":Math.round(v*1000)+" M","Usuarios activos mensuales, en miles de millones (mil M) o millones (M). Fuentes mixtas: reportes de las empresas y estimaciones. LinkedIn tiene 1.300 M de miembros, pero se estima que solo un tercio entra cada mes.")+`<p>Meta reportó 3.560 millones de usuarios únicos en su familia de apps en el primer trimestre de 2026: su primera baja trimestral desde que publica la cifra.</p>`,src:[S.smt]},
+ {k:"El mundo",t:"Las plataformas más grandes",b:chart([["Facebook",3.0,"hito anunciado en 2023"],["WhatsApp",3.0,"hito anunciado en 2025"],["Instagram",3.0,"hito anunciado en sept. 2025"],["YouTube",2.7],["TikTok",1.6,"sin dato oficial reciente"],["Snapchat",0.956],["Pinterest",0.631],["X",0.55],["Threads",0.5],["LinkedIn",0.416,"estimado activo"]],3.0,v=>v>=1?(v===3?"3,0 mil M+":v.toFixed(1).replace(".",",")+" mil M"):Math.round(v*1000)+" M","Usuarios activos mensuales, en miles de millones (mil M) o millones (M). Fuentes mixtas: reportes de las empresas y estimaciones. LinkedIn tiene 1.300 M de miembros, pero se estima que solo un tercio entra cada mes.")+call("¿Empate entre Facebook, WhatsApp e Instagram?","No. Meta ya no publica usuarios exactos por app: solo anuncia cuando una cruza una cifra redonda. Las tres superaron los 3.000 millones en fechas distintas. Y no se pueden sumar: la mayoría de las personas usa dos o tres de ellas.")+`<p>Meta reportó 3.560 millones de usuarios únicos en su familia de apps en el primer trimestre de 2026: su primera baja trimestral desde que publica la cifra.</p>`,src:[S.smt]},
  {k:"Chile",t:"Chile: un país hiperconectado",b:stats(st("19,9 M","habitantes (oct. 2025)"),st("94,5%","usa internet: 18,8 millones de personas"),st("81,7%","tiene identidad activa en redes: 16,2 millones"),st("56%","de la inversión publicitaria ya va a medios digitales"))+`<p>Las identidades en redes crecieron 9,7% en un año. La velocidad móvil típica se duplicó y supera los 84 Mbps: el video vertical ya no tiene barreras técnicas. La edad mediana del país es 36,9 años.</p>`,src:[S.drcl,S.byyd]},
- {k:"Chile",t:"¿Dónde está la audiencia chilena?",b:chart([["TikTok (18+)",16.2,"+16,4%"],["YouTube",14.9,"+0,7%"],["Instagram",13.5,"+8,9%"],["Facebook",13.1,"+3,6%"],["LinkedIn*",10.0,"+12,4%"],["Messenger",7.45,"−0,7%"],["Pinterest",5.36,"+4,2%"],["X",3.25,"−6,5%"],["Reddit",2.8],["Threads",1.6],["Snapchat",0.645,"−12,2%"]],16.2,v=>v.toFixed(v<1?2:1).replace(".",",")+" M","Alcance publicitario a fines de 2025, en millones, y variación anual. No son usuarios activos: son las audiencias que cada plataforma declara a los anunciantes. *LinkedIn informa miembros registrados, no activos.")+call("Ojo con el dato","TikTok declara alcanzar más adultos que los que existen en Chile (102,5%). Las cifras de plataformas sirven para comparar tendencias, no para contar personas."),src:[S.drcl]},
+ {k:"Chile",t:"¿A cuántas personas dice llegar cada plataforma en Chile?",b:`<p>Estas cifras las declara cada plataforma en su herramienta de publicidad: es la audiencia a la que dice que un anunciante puede llegar. No son encuestas ni conteos independientes, y cada una mide distinto.</p>`+chart([["TikTok (18+)",16.2,"+16,4%"],["YouTube",14.9,"+0,7%"],["Instagram",13.5,"+8,9%"],["Facebook",13.1,"+3,6%"],["LinkedIn*",10.0,"+12,4%"],["Messenger",7.45,"−0,7%"],["Pinterest",5.36,"+4,2%"],["X",3.25,"−6,5%"],["Reddit",2.8],["Threads",1.6],["Snapchat",0.645,"−12,2%"]],16.2,v=>v.toFixed(v<1?2:1).replace(".",",")+" M","Alcance publicitario a fines de 2025, en millones, y variación anual. No son usuarios activos: son las audiencias que cada plataforma declara a los anunciantes. *LinkedIn informa miembros registrados, no activos.")+cols(box("Por qué no se pueden comparar",ul("TikTok cuenta solo adultos y declara 102,5% de los mayores de 18: imposible, hay cuentas duplicadas o inactivas","Meta cuenta cuentas a las que puede mostrar anuncios","YouTube cuenta a quienes ven con sesión iniciada","LinkedIn cuenta miembros registrados, aunque no entren")),box("Lo que sí dicen",ul("Tendencias: TikTok es la que más crece (+16,4%) y X la que más cae (−6,5%)","Instagram y TikTok son las más usadas entre personas de 18 a 35 años (Jelly)","WhatsApp no aparece porque no publica su alcance, pero probablemente es la app más usada del país"))),src:[S.drcl,S.jelly]},
  {k:"Encuesta",t:"Tu red favorita",poll:{id:"c1_red",q:"Si mañana solo pudieras conservar una app, ¿cuál sería?",o:["WhatsApp","Instagram","TikTok","YouTube","LinkedIn","Facebook","X o Threads"],ref:"En Chile, Instagram y TikTok empatan como las redes más usadas (83,5% cada una) entre usuarios de 18 a 35 años en el estudio de Jelly. TikTok es la de mayor crecimiento: +2,29 millones de adultos alcanzables en 2025."},src:[S.jelly,S.drcl]},
  {k:"Chile",t:"Para qué usan las redes los chilenos",b:cols(box("Lo que buscan",ul("Humor y memes: 75%","Tips y consejos: 68%","Tutoriales: 60%")+`<p class="muted">Estudio Jelly, respuesta múltiple.</p>`),box("Para informarse",`<p>51% usa las redes como fuente de información. Las redes ya compiten con los medios en la agenda pública.</p>`),box("El clima",`<p>El estudio SOUL describe 2025 como un año de alta polarización: las redes como espacio donde se expresa la emoción colectiva, no solo el entretenimiento.</p>`)),src:[S.jelly,S.soul]},
  {k:"Algoritmos",t:"El fin del feed de amigos",b:`<p class="lead">Hoy la mayor parte de lo que vemos no viene de cuentas que seguimos, sino de sistemas de recomendación que predicen qué nos va a retener.</p>`+cols(box("Alcance conectado","Lo que llega a tus seguidores. Cada vez es una porción menor del total."),box("Alcance no conectado","Lo que el algoritmo muestra a quienes no te siguen. Aquí está el crecimiento, y se gana con contenido, no con seguidores."))+`<p>Instagram describe su sistema como una audición: el contenido se prueba con un grupo pequeño y, si funciona, se amplía. Una cuenta pequeña puede llegar a cientos de miles de personas, y una grande puede no llegar a nadie.</p>`,src:[S.igrank]},
@@ -353,7 +451,7 @@ slides:[
  {k:"Plataformas · Instagram",t:"Instagram: la vitrina visual que se volvió de video",b:ficha(ul("Unos 3.000 millones de usuarios en el mundo","13,5 millones de personas alcanzables en Chile (+8,9%)","Reels, historias, carruseles y mensajes directos"),ul("De fotos de amigos a recomendaciones de cuentas que no sigues","«Tu Algoritmo»: el usuario elige temas que quiere ver más o menos (Reels desde dic. 2025, prueba en el feed desde jun. 2026)","Pesa más que te compartan por mensaje directo que un like","La propia Instagram dice que lo pulido pierde frente a lo auténtico"),ul("Marcas de consumo, turismo, cultura","Historias de personas y detrás de cámaras","Comunidad y respuesta en mensajes directos")),src:[S.igalgo,S.igrank,S.drcl]},
  {k:"Plataformas · Facebook",t:"Facebook: menos joven, más comunidad local",b:ficha(ul("Cerca de 3.000 millones de usuarios en el mundo","13,1 millones alcanzables en Chile; llega a 82% de los adultos","Grupos, Marketplace, eventos y Reels"),ul("Uso estancado en mercados maduros y caída fuerte entre adolescentes","Rediseño de diciembre de 2025: Marketplace a la barra principal, fotos en grilla al estilo Instagram, más control del feed, foco en usuarios jóvenes"),ul("Comunidades locales: juntas de vecinos, grupos de comuna","Público adulto y mayor de 35","Eventos, avisos y comunicación territorial")),src:[S.fb,S.drcl]},
  {k:"Plataformas · TikTok",t:"TikTok: el buscador de las nuevas generaciones",b:ficha(ul("16,2 millones de adultos alcanzables en Chile, la de mayor crecimiento (+16,4%)","Más de 1.600 millones de usuarios estimados en el mundo","Video vertical, en vivo, TikTok Shop"),ul("De bailes a un motor de búsqueda: se buscan recetas, viajes, explicaciones","El algoritmo premia retención, repeticiones, guardados, audio original y videos algo más largos","Notas de contexto (Footnotes) y más controles sobre contenido de IA","En EE.UU. acordó crear una empresa conjunta con inversionistas locales para seguir operando"),ul("Alcance masivo y joven","Explicadores, tendencias, humor","Personas reales de la organización hablando a cámara"),"El tono importa: lo que funciona en TikTok puede parecer frívolo en temas de impacto en comunidades."),src:[S.ttalgo,S.ttnov,S.ttus,S.drcl]},
- {k:"Plataformas · YouTube",t:"YouTube: la televisión, el buscador y el archivo",b:ficha(ul("Unos 2.700 millones de usuarios; 14,9 millones alcanzables en Chile","Shorts promedia 200.000 millones de vistas diarias","Más de 1.000 millones de personas ven podcasts al mes en YouTube"),ul("Se ve cada vez más en el televisor: en EE.UU. fue la plataforma más vista en TV todos los meses de 2025 (Nielsen)","Shorts como puerta de entrada al video largo","Herramientas de IA para creadores y retiro de canales de «contenido basura» de IA"),ul("Video largo: documentales, tutoriales, entrevistas","Contenido que se busca y dura años","Videopodcast")),src:[S.ytl,S.pod,S.drcl]},
+ {k:"Plataformas · YouTube",t:"YouTube: la televisión, el buscador y el archivo",b:ficha(ul("Unos 2.700 millones de usuarios; 14,9 millones alcanzables en Chile","Shorts promedia 200.000 millones de vistas diarias","Más de 1.000 millones de personas ven podcasts al mes en YouTube"),ul("Se ve cada vez más en el televisor: en Estados Unidos fue la plataforma con más tiempo de visionado en TV todos los meses de 2025, según Nielsen (la empresa que mide el rating de televisión allá; en Chile el equivalente es Kantar IBOPE Media)","Shorts como puerta de entrada al video largo","Herramientas de IA para creadores y retiro de canales de «contenido basura» de IA"),ul("Video largo: documentales, tutoriales, entrevistas","Contenido que se busca y dura años","Videopodcast")),src:[S.ytl,S.pod,S.drcl]},
  {k:"Plataformas · WhatsApp",t:"WhatsApp: la red donde de verdad conversamos",b:ficha(ul("Más de 3.000 millones de usuarios en el mundo","En Chile es la app de mensajería por defecto: familias, trabajo, barrio","Chats, grupos, comunidades, canales y WhatsApp Business"),ul("Canales (2023): difusión de una vía, como un newsletter","Desde febrero de 2026: anuncios entre los Estados y canales promocionados, solo en la pestaña Novedades","Chats y grupos siguen sin anuncios y cifrados"),ul("Comunicación interna con trabajadores en terreno","Comunidades y vecinos","Atención y avisos importantes")),src:[S.wa,S.wa2]},
  {k:"Plataformas · LinkedIn",t:"LinkedIn: la reputación profesional, con rostro",b:ficha(ul("1.300 millones de miembros; se estima un tercio activo al mes","10 millones de miembros en Chile (+12,4%)","Posts, carruseles en documento, video, newsletters, eventos"),ul("El uso de video creció 69% en un año","El alcance orgánico de las páginas de empresa cayó a cerca de 2%: hablan las personas, no los logos","Thought Leader Ads: pautar el post de un ejecutivo o trabajador"),ul("B2B, inversionistas, reguladores, talento","Voz de ejecutivos y especialistas","Reportes, hitos, reclutamiento")),src:[S.li,S.drcl]},
  {k:"Plataformas · X",t:"X: tiempo real, prensa y polarización",b:ficha(ul("Unos 550 millones de usuarios en el mundo","3,25 millones alcanzables en Chile, en baja (−6,5%)","Audiencia reportada mayoritariamente masculina"),ul("Desde la compra de 2022: menos moderación, verificación pagada, Grok (la IA de xAI) integrado","Muchos anunciantes y organizaciones redujeron su presencia; parte de la conversación se movió a Threads y Bluesky"),ul("Monitorear prensa, política y crisis","Responder rápido en temas públicos","Llegar a periodistas y líderes de opinión"),"Revisa junto a qué contenido aparecerían tus anuncios antes de pautar."),src:[S.drcl]},
@@ -364,7 +462,7 @@ slides:[
  /* ---- Sitio web ---- */
  {k:"El sitio web",t:"Tierra arrendada y tierra propia",b:cols(box("Tierra arrendada: redes sociales",ul("El algoritmo cambia sin aviso","El alcance orgánico de una página de empresa en LinkedIn ronda el 2%","Una cuenta puede ser suspendida o la plataforma cerrar","Los seguidores son de la plataforma, no tuyos")),box("Tierra propia: sitio web y lista de correo",ul("Tú decides qué se publica y cómo se ve","Es la fuente que leen buscadores, periodistas e IA","Los datos y contactos son tuyos (con permiso)","Todo lo demás apunta hacia aquí")))+`<p class="lead">Las redes sirven para llegar; el sitio web sirve para que te encuentren, te verifiquen y actúen.</p>`,src:[S.li]},
  {k:"El sitio web",t:"El sitio como eje de la estrategia",b:`<div class="hub"><div class="hub-c">Sitio web<span>fuente verificable</span></div><div class="hub-i">Redes sociales<span>llevan a la página que amplía</span></div><div class="hub-i">Buscadores e IA<span>leen y citan el sitio</span></div><div class="hub-i">Email y newsletter<span>enlazan a contenido propio</span></div><div class="hub-i">Publicidad<span>aterriza en landing pages</span></div><div class="hub-i">Prensa<span>usa la sala de prensa y los datos</span></div><div class="hub-i">Trabajadores<span>comparten desde el sitio</span></div></div>`+call("Para una organización con agenda ESG, el sitio debería tener","Página de sostenibilidad con datos y fechas · reporte en HTML, no solo PDF · preguntas frecuentes · sala de prensa · canal de contacto o denuncias · noticias o blog · versión en inglés si hay públicos globales.")},
- {k:"Email",t:"El email no murió: se volvió personal",b:stats(st("4.890 M","usuarios de email proyectados para 2027"),st("US$36","de retorno promedio por cada dólar invertido (Litmus)"),st("35,6%","tasa de apertura promedio (Mailchimp), inflada por la privacidad de Apple"))+cols(box("Lo que funciona",ul("Segmentar: no es lo mismo un vecino que un inversionista","Mails personalizados y escritos por una persona, no solo con el nombre","Newsletters con valor propio: algo que se espera leer","Automatizaciones: bienvenida, después de un evento, recordatorios")),box("Usos en comunicación ESG",ul("Newsletter interno para trabajadores","Boletín a la comunidad sobre avances y pendientes","Envío del reporte a stakeholders con resumen propio","Newsletter de LinkedIn de un ejecutivo o especialista")))+call("Desde diciembre de 2026","Con la Ley 21.719, usar un correo obtenido para otra cosa (una boleta, un trámite) para enviar publicidad sin autorización clara será sancionable."),src:[S.email,S.ley]},
+ {k:"Email",t:"El email no murió: se volvió personal",b:`<p class="muted">Datos globales, con fuerte peso de Estados Unidos y Europa. No hay cifras chilenas comparables.</p>`+stats(st("4.890 M","usuarios de email en el mundo proyectados para 2027 (Statista)"),st("US$36","de retorno promedio por cada dólar invertido, declarado por empresas (Litmus)"),st("35,6%","tasa de apertura promedio de campañas en Mailchimp, inflada por la privacidad de Apple Mail"))+cols(box("Lo que funciona",ul("Segmentar: no es lo mismo un vecino que un inversionista","Mails personalizados y escritos por una persona, no solo con el nombre","Newsletters con valor propio: algo que se espera leer","Automatizaciones: bienvenida, después de un evento, recordatorios")),box("Usos en comunicación ESG",ul("Newsletter interno para trabajadores","Boletín a la comunidad sobre avances y pendientes","Envío del reporte a stakeholders con resumen propio","Newsletter de LinkedIn de un ejecutivo o especialista")))+call("Desde diciembre de 2026","Con la Ley 21.719, usar un correo obtenido para otra cosa (una boleta, un trámite) para enviar publicidad sin autorización clara será sancionable."),src:[S.email,S.ley]},
  {k:"Encuesta",t:"Tu bandeja de entrada",poll:{id:"c1_news",q:"¿Cuántos newsletters lees de verdad (no solo recibes)?",o:["Ninguno","Uno o dos","Entre tres y cinco","Más de cinco","Los borro sin abrir"],ref:"La tasa de apertura promedio ronda 35% (Mailchimp), pero lo que importa es si te esperan: los newsletters que funcionan son los que alguien echaría de menos."},src:[S.email]},
 
  /* ---- Búsqueda e IA ---- */
@@ -392,7 +490,7 @@ slides:[
 
 { id:"c2", n:2, title:"Contenidos que conectan", sub:"Cómo captar atención sin perder credibilidad: formatos y plataformas, podcast, influencers y voceros, cómo comunicar sostenibilidad sin greenwashing y cómo usar la IA para producir mejor.",
 slides:[
- {cover:1,k:"Clase 2 de 3",t:"Contenidos que conectan",b:`<div class="bignum">02</div><p class="lead">De lo que la organización quiere decir a lo que a su audiencia le importa.</p>`},
+ {cover:1,k:"Clase 2 de 3",t:"Contenidos que conectan",lead:"De lo que la organización quiere decir a lo que a su audiencia le importa."},
  {k:"Hoja de ruta",t:"Qué vamos a ver hoy",b:steps(["Atención","Cómo se gana en los primeros segundos"],["Conexión","Traducir datos en historias"],["Plataformas","Qué contenido funciona en cada una"],["Podcast","El formato largo que volvió"],["Voces","Influencers, expertos y trabajadores"],["Sostenibilidad","Greenwashing, silencio y casos"],["IA","Usarla bien, declararla siempre"],["Taller","Un dato, tres públicos, tres piezas"])},
  {k:"Encuesta",t:"¿Qué te detiene el scroll?",poll:{id:"c2_scroll",q:"¿Qué tipo de contenido es más probable que te haga detenerte?",o:["Humor y memes","Tips y consejos prácticos","Tutoriales paso a paso","Historias reales de personas","Datos o noticias sorprendentes","Detrás de cámaras de cómo se hace algo"],ref:"En Chile, el humor y los memes lideran (75%), seguidos de tips y consejos (68%) y tutoriales (60%), según Jelly. La sostenibilidad casi nunca se cuenta en esos formatos."},src:[S.jelly]},
  {k:"Atención",t:"Los primeros dos segundos",b:cols(box("El gancho","Una pregunta, un dato inesperado, una imagen que no calza o una tensión: «Esta planta usa la mitad del agua que hace cinco años. Te mostramos cómo»."),box("La retención","El algoritmo mide si te quedas. Ritmo, subtítulos (la mayoría ve sin sonido) y una promesa que se cumple al final."),box("Lo compartible","En Instagram, los envíos por mensaje directo pesan más que los likes para llegar a nuevas personas. Pregúntate: ¿alguien se lo mandaría a un amigo?"))+call("Prueba rápida","Si el primer segundo de tu video es un logo, ya lo perdiste."),src:[S.igrank]},
@@ -433,7 +531,7 @@ Ejemplo de tono: «Sabemos que el verano fue difícil. Esto es lo que cambiamos 
 
 { id:"c3", n:3, title:"De la idea a la estrategia", sub:"Cómo estructurar una estrategia de comunicación digital sobre sostenibilidad: públicos, mensajes, plataformas, contenidos, pauta, KPIs y riesgos. Cierra con el trabajo final.",
 slides:[
- {cover:1,k:"Clase 3 de 3",t:"De la idea a la estrategia",b:`<div class="bignum">03</div><p class="lead">Ordenar todo lo visto en un plan que se pueda ejecutar, medir y defender.</p>`},
+ {cover:1,k:"Clase 3 de 3",t:"De la idea a la estrategia",lead:"Ordenar todo lo visto en un plan que se pueda ejecutar, medir y defender."},
  {k:"Encuesta",t:"El público más difícil",poll:{id:"c3_publico",q:"Desde un área de comunicaciones, ¿cuál es el público más difícil para hablar de sostenibilidad?",o:["Los propios trabajadores","La comunidad vecina a la operación","Inversionistas y reguladores","La opinión pública y los medios","Una audiencia global o internacional","Los clientes o consumidores"],ref:"No hay respuesta correcta: cada público exige plataforma, tono, vocero y métrica distintos. Eso es lo que vamos a ordenar hoy."}},
  {k:"Modelo",t:"Diez pasos de una estrategia",b:steps(["Diagnóstico","Dónde estamos, incluido el sitio y lo que dicen las IA"],["Públicos","A quién hablamos"],["Objetivos","Qué queremos lograr"],["Mensajes","Qué decimos a cada uno"],["Ecosistema","Sitio, email, redes, prensa y pauta, cada uno con su rol"],["Contenidos","Pilares, formatos y calendario"],["Voces","Voceros, creadores, trabajadores"],["Inversión","Cómo se usa el presupuesto mensual"],["KPIs","Cómo sabremos si funcionó"],["Riesgos","Qué puede salir mal y cómo responder"])+`<p class="muted">Es la misma estructura que pide el trabajo final.</p>`},
  {k:"Paso 1",t:"Diagnóstico: antes de comunicar, entender",b:cols(box("Materialidad","¿Qué temas ESG son relevantes para el negocio y para su entorno? La doble materialidad mira ambas direcciones: cómo el entorno afecta a la empresa y cómo la empresa afecta al entorno."),box("Escucha","¿Qué se dice hoy de la organización? Comentarios, prensa local, búsquedas, y qué responden ChatGPT o Gemini cuando preguntas por ella."),box("Auditoría de canales","Sitio web (velocidad, datos, preguntas frecuentes, formularios), listas de correo, cuentas en redes, campañas anteriores. ¿Qué existe, quién lo administra, qué está abandonado?"),box("Referentes","Tres organizaciones que lo hacen bien y tres que lo hacen mal en tu sector."))+call("Pregunta clave","¿Hay algo real que contar? Si la acción no existe o no se puede probar, el problema no es de comunicación.")},
@@ -492,7 +590,7 @@ const caseFull=c=>`<div class="case"><img class="cimg" src="${PX(c.img,900)}" al
 CLASSES[2].slides.forEach(s=>{ if(s.b&&s.b.includes("{{CASES_SHORT}}")) s.b=s.b.replace("{{CASES_SHORT}}",CASES.map(caseShort).join("")); });
 
 const TRABAJO=`<div class="page wrap">
- <div class="chead" style="padding-top:0"><span class="eyebrow">Trabajo final del módulo · individual</span><h1>Estrategia de comunicación digital ESG</h1><p>Elige uno de los tres casos ficticios y diseña una estrategia breve, creativa y ejecutable. Puedes completar los datos que falten, siempre que lo declares y sea verosímil.</p></div>
+ <div class="chead" style="padding-top:0"><span class="eyebrow">Trabajo final del módulo · individual</span><h1>Estrategia de comunicación digital ESG</h1><p>Elige uno de los tres casos ficticios y diseña una estrategia breve, creativa y ejecutable. Puedes completar los datos que falten, siempre que lo declares y sea verosímil.</p><div class="cactions"><button class="btn ghost" data-pdf="Trabajo final - Estrategia de comunicación digital ESG">${ic("file","sm")} Descargar PDF</button></div></div>
  <section><h2>Los casos</h2><div class="cases">${CASES.map(caseFull).join("")}</div></section>
  <section><h2>Qué debes entregar</h2>
  ${steps(["Diagnóstico y públicos","Contexto en pocas líneas y dos o tres públicos, cada uno con lo que le importa, dónde está y en quién confía."],["Objetivos","Dos o tres objetivos SMART, ligados a una etapa: conocer, considerar, actuar."],["Mensajes y ecosistema","Mensaje central y su traducción a cada público. Rol del sitio web, el email, las redes, la prensa y la pauta."],["Plan de contenidos","Pilares y calendario de un mes en una tabla simple."],["Tres piezas en brief","Descritas en texto para que un diseñador o realizador las produzca. Para públicos distintos; al menos una para el sitio web o el email."],["Inversión mensual","Distribución del presupuesto del caso entre producción, plataformas y medición, con su justificación y el costo por resultado que esperas (supuesto)."],["KPIs y riesgos","Cinco a ocho indicadores con meta, revisión anti-greenwashing y respuesta a una crisis probable."])}
@@ -511,13 +609,23 @@ const pad=n=>String(n).padStart(2,"0");
 function pollHTML(p){
   return `<div class="poll" data-poll="${p.id}"><p class="pq">${esc(p.q)}</p><div class="opts">${p.o.map((o,i)=>`<button class="opt" data-i="${i}"><span class="fill"></span><span class="lbl">${esc(o)}</span><span class="pct"></span></button>`).join("")}</div><div class="pmeta"><span class="pcount">Conectando…</span></div>${p.ref?`<p class="pref hidden-ref"><b>Dato de referencia</b>${esc(p.ref)}</p>`:""}</div>`;
 }
+function coverHTML(c,s,i){
+  const polls=c.slides.filter(x=>x.poll).length, host=(location.host||"clasescomunicaciondigital.netlify.app");
+  return `<article class="slide cover" id="${c.id}-${i+1}"><div class="cv-grid"><div class="cv-text">
+   <div class="shead"><span class="kick">${esc(s.k)} · Módulo de Comunicación Digital</span><button class="from" data-from="${c.id}:${i}" title="Presentar desde esta lámina">Presentar desde aquí ▸</button></div>
+   <div class="cv-num">${pad(c.n)}</div><h2>${s.t}</h2><p class="lead">${s.lead}</p>
+   <dl class="cv-meta"><div><dt>Programa</dt><dd>Diplomado en Sostenibilidad y Comunicación Corporativa</dd></div><div><dt>Profesor</dt><dd>Diego Salas</dd></div><div><dt>Sesión</dt><dd>2 horas · ${c.slides.length} láminas · ${polls} encuestas</dd></div></dl>
+   <p class="cv-join">${ic("phone","sm")} Sigue la clase y vota desde tu celular: <b>${esc(host)}</b></p>
+  </div><ul class="cv-tiles">${(TOPICS[c.id]||[]).map(([n,l,h])=>`<li class="${h?"hl":""}">${ic(n)}<span>${l}</span></li>`).join("")}</ul></div></article>`;
+}
 function slideHTML(c,s,i){
+  if(s.cover) return coverHTML(c,s,i);
   const media=(s.vid||[]).length?`<div class="media">${s.vid.map(([l,u])=>`<a href="${u}" target="_blank" rel="noopener"><span class="ic">▶</span>${esc(l)}</a>`).join("")}</div>`:"";
   const src=(s.src||[]).length?`<div class="src"><b>Fuentes</b>${s.src.map(([l,u])=>`<a href="${u}" target="_blank" rel="noopener">${esc(l)}</a>`).join("")}</div>`:"";
   return `<article class="slide${s.cover?" cover":""}${s.poll?" is-poll":""}" id="${c.id}-${i+1}"><div class="shead"><span class="num">${c.n}.${pad(i+1)}</span><span class="kick">${esc(s.k)}</span><button class="from" data-from="${c.id}:${i}" title="Presentar desde esta lámina">Presentar desde aquí ▸</button></div><h2>${s.t}</h2><div class="sb">${s.b||""}${s.poll?pollHTML(s.poll):""}${media}</div>${src}</article>`;
 }
 function renderClass(c){
-  return `<div class="wrap"><div class="chead"><span class="eyebrow">Clase ${c.n} de 3 · ${c.slides.length} láminas · ${c.slides.filter(s=>s.poll).length} encuestas</span><h1>${c.title}</h1><p>${c.sub}</p><div class="cactions"><button class="btn" data-from="${c.id}:0">▶ Presentar clase ${c.n}</button></div>
+  return `<div class="wrap"><div class="chead"><span class="eyebrow">Clase ${c.n} de 3 · ${c.slides.length} láminas · ${c.slides.filter(s=>s.poll).length} encuestas</span><h1>${c.title}</h1><p>${c.sub}</p><ul class="chips">${(TOPICS[c.id]||[]).map(([n,l])=>`<li>${ic(n,"sm")}${l}</li>`).join("")}</ul><div class="cactions"><button class="btn" data-from="${c.id}:0">▶ Presentar clase ${c.n}</button><button class="btn ghost" data-pdf="Clase ${c.n} - ${c.title}">${ic("file","sm")} Descargar PDF</button></div>
   <details class="toc"><summary>Índice de la clase</summary><ol>${c.slides.map((s,i)=>`<li><a href="#${c.id}-${i+1}" data-jump="${c.id}-${i+1}"><span class="n">${c.n}.${pad(i+1)}</span>${s.t}</a>${s.poll?'<span class="pq">encuesta</span>':""}</li>`).join("")}</ol></details></div>
   <div class="slides">${c.slides.map((s,i)=>slideHTML(c,s,i)).join("")}</div></div>`;
 }
@@ -546,6 +654,7 @@ main.addEventListener("click",e=>{
 });
 document.addEventListener("click",e=>{
   const f=e.target.closest("[data-from]"); if(f){ const [cid,i]=f.dataset.from.split(":"); openStage(cid,+i); return; }
+  const pd=e.target.closest("[data-pdf]"); if(pd){ printPDF(pd.dataset.pdf); return; }
   const o=e.target.closest(".opt"); if(o){ const p=o.closest("[data-poll]"); vote(p.dataset.poll,+o.dataset.i); return; }
   const r=e.target.closest(".reset"); if(r){ resetPoll(r.dataset.reset); return; }
   const cp=e.target.closest("[data-copy]"); if(cp){ const el=document.getElementById(cp.dataset.copy); const txt=el.innerText.replace(/^Copiar\s*/,"").replace(/^Copiado\s*/,"");
@@ -554,6 +663,20 @@ document.addEventListener("click",e=>{
 });
 function selectText(el){ const r=document.createRange(); r.selectNodeContents(el); const s=getSelection(); s.removeAllRanges(); s.addRange(r); }
 
+/* ---------- PDF (impresión del navegador) ---------- */
+let printing=false;
+async function printPDF(name){
+  if(printing) return; printing=true;
+  const imgs=[...main.querySelectorAll("img")];
+  imgs.forEach(im=>{ im.loading="eager"; });
+  await Promise.race([Promise.all(imgs.map(im=>im.complete?null:new Promise(r=>{im.onload=im.onerror=r;}))),new Promise(r=>setTimeout(r,4000))]);
+  try{ await document.fonts.ready; }catch(e){}
+  const prev=document.title; document.title=name;
+  const done=()=>{ document.title=prev; printing=false; window.removeEventListener("afterprint",done); };
+  window.addEventListener("afterprint",done);
+  window.print();
+  setTimeout(()=>{ if(printing) done(); },60000);
+}
 /* ---------- presenter ---------- */
 const stage=document.getElementById("stage"), stageIn=document.getElementById("stageIn");
 let sc=null, si=0;
