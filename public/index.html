@@ -1,0 +1,598 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Módulo de comunicación digital del Diplomado en Sostenibilidad y Comunicación Corporativa.">
+<title>Comunicación Digital ESG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: cuaderno de curso — barra superior con clases, cada lámina es una ficha legible; modo Presentar = una lámina a pantalla completa */
+:root{
+  --bg:#F1F5F3; --surface:#FFFFFF; --ink:#13231F; --muted:#56665F; --line:#D3DDD8;
+  --accent:#0A6B63; --accent-ink:#FFFFFF; --soft:#E1EDE9; --pollen:#C98F0E; --pollen-soft:#F6EBCF;
+  --warn:#B4441F;
+  --f-display:"Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0D1614; --surface:#14201D; --ink:#E4EDE9; --muted:#9BACA5; --line:#27352F;
+  --accent:#45C1B2; --accent-ink:#06201C; --soft:#1A2E2A; --pollen:#E8B743; --pollen-soft:#3A301A; --warn:#F08A62; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0D1614; --surface:#14201D; --ink:#E4EDE9; --muted:#9BACA5; --line:#27352F;
+  --accent:#45C1B2; --accent-ink:#06201C; --soft:#1A2E2A; --pollen:#E8B743; --pollen-soft:#3A301A; --warn:#F08A62; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.55;margin:0}
+a{color:var(--accent);text-underline-offset:3px}
+a:hover{text-decoration-thickness:2px}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--pollen);outline-offset:2px;border-radius:4px}
+h1,h2,h3{font-family:var(--f-display);line-height:1.08;text-wrap:balance;margin:0;letter-spacing:-.01em}
+.wrap{max-width:1040px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+/* top bar */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;padding-block:10px}
+.brand{display:flex;flex-direction:column;min-width:0;margin-right:auto}
+.brand b{font-family:var(--f-display);font-size:1.05rem;font-weight:800}
+.brand span{font-size:.78rem;color:var(--muted)}
+.tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;max-width:100%}
+.tabs button{border:0;background:transparent;padding:8px 12px;border-radius:999px;font-weight:700;font-size:.92rem;white-space:nowrap;color:var(--muted)}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--surface)}
+.tabs button:hover:not([aria-selected="true"]){background:var(--soft);color:var(--ink)}
+.status{font-family:var(--f-mono);font-size:.72rem;display:flex;align-items:center;gap:6px;color:var(--muted)}
+.status i{width:8px;height:8px;border-radius:50%;background:var(--muted);display:inline-block}
+.status[data-s="live"] i{background:#2BA36B}
+.status[data-s="readonly"] i,.status[data-s="offline"] i{background:var(--pollen)}
+
+/* class header */
+.chead{padding-block:40px 24px}
+.chead .eyebrow{font-family:var(--f-mono);font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.chead h1{font-size:clamp(2.2rem,6vw,4rem);font-weight:800;margin:.25em 0 .2em}
+.chead p{max-width:62ch;color:var(--muted);margin:0}
+.cactions{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.btn{border:1px solid var(--ink);background:var(--ink);color:var(--surface);padding:10px 18px;border-radius:999px;font-weight:700;display:inline-flex;align-items:center;gap:8px}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn.ghost:hover{border-color:var(--ink)}
+.toc{margin-top:22px;border-top:1px solid var(--line)}
+.toc summary{cursor:pointer;padding:12px 0;font-weight:700}
+.toc ol{list-style:none;padding:0;margin:0 0 14px;columns:2 260px;column-gap:28px}
+.toc li{break-inside:avoid;padding:3px 0;font-size:.92rem}
+.toc li a{color:var(--ink);text-decoration:none}
+.toc li a:hover{color:var(--accent)}
+.toc .n{font-family:var(--f-mono);color:var(--muted);font-size:.78rem;margin-right:8px}
+.toc .pq{color:var(--pollen);font-family:var(--f-mono);font-size:.72rem;margin-left:6px}
+
+/* slides in reading mode */
+.slides{display:flex;flex-direction:column;gap:18px;padding-bottom:60px}
+.slide{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:clamp(20px,4vw,40px);min-width:0;scroll-margin-top:90px}
+.shead{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px;margin-bottom:10px}
+.num{font-family:var(--f-mono);font-size:.78rem;color:var(--muted)}
+.kick{font-family:var(--f-mono);font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:600}
+.slide.is-poll .kick{color:var(--pollen)}
+.from{margin-left:auto;border:0;background:transparent;color:var(--muted);font-size:.8rem;padding:4px 8px;border-radius:6px}
+.from:hover{background:var(--soft);color:var(--ink)}
+.slide h2{font-size:clamp(1.5rem,3.4vw,2.3rem);font-weight:700;margin-bottom:.5em}
+.sb{min-width:0}
+.sb > *:first-child{margin-top:0}
+.sb p{max-width:68ch}
+.lead{font-size:1.15em;color:var(--ink)}
+.muted{color:var(--muted)}
+.pts{padding-left:1.1em;margin:.6em 0}
+.pts li{margin:.35em 0;max-width:66ch}
+.pts li::marker{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin:1em 0}
+.stat{border-top:3px solid var(--accent);padding-top:10px;min-width:0}
+.stat .v{font-family:var(--f-display);font-weight:800;font-size:clamp(1.8rem,4vw,2.6rem);line-height:1;font-variant-numeric:tabular-nums}
+.stat .l{font-size:.9rem;color:var(--muted);margin-top:6px}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin:1em 0}
+.cols > div{min-width:0}
+.box{background:var(--soft);border-radius:10px;padding:16px 18px;min-width:0}
+.box h3{font-size:1.1rem;margin-bottom:.35em}
+.box p,.box ul{margin:.3em 0}
+.callout{border-left:4px solid var(--pollen);background:var(--pollen-soft);padding:12px 16px;border-radius:0 10px 10px 0;margin:1em 0}
+.callout b{font-family:var(--f-mono);font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:2px}
+.tw{overflow-x:auto;margin:1em 0;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:.92rem;min-width:560px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--f-mono);font-size:.74rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);background:var(--soft)}
+tr:last-child td{border-bottom:0}
+.chart{margin:1em 0;display:grid;gap:7px}
+.crow{display:grid;grid-template-columns:minmax(90px,150px) 1fr auto;gap:10px;align-items:center;font-size:.9rem}
+.crow .cl{min-width:0;overflow-wrap:anywhere}
+.ctrack{height:14px;background:var(--soft);border-radius:4px;overflow:hidden}
+.cbar{height:100%;background:var(--accent);border-radius:4px}
+.cv{font-family:var(--f-mono);font-size:.8rem;font-variant-numeric:tabular-nums;white-space:nowrap}
+.cnote{font-size:.8rem;color:var(--muted)}
+.prompt{position:relative;background:var(--ink);color:var(--surface);border-radius:10px;padding:16px 18px;font-family:var(--f-mono);font-size:.84rem;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere}
+.copy{position:absolute;top:8px;right:8px;border:1px solid currentColor;background:transparent;color:inherit;border-radius:6px;font-size:.72rem;padding:3px 8px;font-family:var(--f-mono)}
+.steps{list-style:none;padding:0;margin:1em 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;counter-reset:st}
+.steps li{counter-increment:st;border:1px solid var(--line);border-radius:10px;padding:12px;min-width:0;font-size:.92rem}
+.steps li::before{content:counter(st,decimal-leading-zero);display:block;font-family:var(--f-mono);font-size:.74rem;color:var(--accent);margin-bottom:4px}
+.steps b{display:block;font-family:var(--f-display);font-size:1.02rem}
+
+/* links + sources */
+.media{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.media a{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:6px 14px 6px 8px;text-decoration:none;color:var(--ink);font-size:.88rem;font-weight:700}
+.media a:hover{border-color:var(--accent)}
+.media .ic{width:22px;height:22px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-size:.6rem}
+.src{margin-top:18px;padding-top:12px;border-top:1px dashed var(--line);font-size:.78rem;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 14px}
+.src b{font-family:var(--f-mono);font-weight:600;letter-spacing:.05em;text-transform:uppercase;font-size:.7rem}
+.src a{color:var(--muted)}
+.src a:hover{color:var(--accent)}
+
+/* polls */
+.poll{border:2px solid var(--pollen);border-radius:14px;padding:clamp(16px,3vw,26px);margin-top:6px;background:var(--surface)}
+.pq{font-family:var(--f-display);font-weight:700;font-size:clamp(1.25rem,2.6vw,1.7rem);margin:0 0 14px;line-height:1.2}
+.opts{display:grid;gap:8px}
+.opt{position:relative;display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px;text-align:left;border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:11px 14px;overflow:hidden;min-height:46px}
+.opt:hover:not(:disabled){border-color:var(--pollen)}
+.opt:disabled{cursor:default}
+.opt .fill{position:absolute;inset:0 auto 0 0;width:0;background:var(--pollen-soft);transition:width .5s ease;z-index:0}
+.opt span{position:relative;z-index:1;min-width:0}
+.opt .pct{font-family:var(--f-mono);font-size:.82rem;font-variant-numeric:tabular-nums;color:var(--muted)}
+.opt.mine{border-color:var(--pollen);border-width:2px;font-weight:700}
+.opt.mine .lbl::after{content:"  ✓ tu voto";font-family:var(--f-mono);font-size:.7rem;color:var(--pollen);font-weight:600}
+.pmeta{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;margin-top:12px;font-size:.82rem;color:var(--muted)}
+.pmeta .reset{border:1px solid var(--line);background:transparent;border-radius:6px;padding:3px 10px;font-size:.78rem}
+.pref{margin:12px 0 0;font-size:.9rem;padding-top:10px;border-top:1px solid var(--line)}
+.pref b{font-family:var(--f-mono);font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;color:var(--pollen);margin-right:6px}
+.pref.hidden-ref{display:none}
+.poll.answered .pref.hidden-ref,.poll.owner .pref.hidden-ref{display:block}
+
+/* cover */
+.slide.cover{background:var(--ink);color:var(--surface);border:0}
+.slide.cover .kick,.slide.cover .num{color:var(--surface);opacity:.75}
+.slide.cover h2{font-size:clamp(2rem,5vw,3.4rem);font-weight:800}
+.slide.cover .from{color:var(--surface)}
+.slide.cover .from:hover{background:rgba(127,127,127,.25)}
+.bignum{font-family:var(--f-display);font-weight:800;font-size:clamp(4rem,12vw,8rem);line-height:.9;color:var(--accent);letter-spacing:-.04em}
+
+/* case cards */
+.cases{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin:1em 0}
+.case{border:1px solid var(--line);border-radius:14px;padding:20px;background:var(--surface);display:flex;flex-direction:column;gap:8px;min-width:0}
+.case .tag{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.case h3{font-size:1.35rem}
+.case dl{margin:4px 0 0;display:grid;gap:8px}
+.case dt{font-family:var(--f-mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.case dd{margin:0;font-size:.92rem}
+.esg{display:flex;gap:6px}
+.esg span{font-family:var(--f-mono);font-size:.7rem;border:1px solid var(--line);border-radius:4px;padding:1px 6px;color:var(--muted)}
+.esg span.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.page{padding-block:36px 70px}
+.page section{margin-top:34px}
+.page h2{font-size:clamp(1.5rem,3.4vw,2.1rem);margin-bottom:.4em}
+.srclist{columns:2 320px;column-gap:30px;padding-left:1.1em;font-size:.92rem}
+.srclist li{break-inside:avoid;margin:.3em 0}
+.srclist .cl{font-family:var(--f-mono);font-size:.7rem;color:var(--muted)}
+
+/* presenter stage */
+.stage{position:fixed;inset:0;z-index:50;background:var(--bg);display:flex;flex-direction:column;
+  padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}
+.stage-body{flex:1;overflow-y:auto;display:flex}
+.stage-in{margin:auto;width:100%;max-width:1180px;padding:clamp(20px,4vw,56px) max(20px,4vw)}
+.stage .slide{border:0;background:transparent;padding:0}
+.stage .slide.cover{background:transparent;color:var(--ink)}
+.stage .slide.cover .kick,.stage .slide.cover .num{color:var(--accent);opacity:1}
+.stage .slide h2{font-size:clamp(2rem,4.6vw,3.8rem)}
+.stage .sb{font-size:clamp(1.05rem,1.7vw,1.5rem)}
+.stage .sb p,.stage .pts li{max-width:none}
+.stage .from{display:none}
+.stage .stat .v{font-size:clamp(2.4rem,5.4vw,4.4rem)}
+.stage .poll{font-size:clamp(1rem,1.6vw,1.35rem)}
+.stage .pq{font-size:clamp(1.6rem,3.4vw,2.6rem)}
+.stage .opt{min-height:clamp(46px,6vh,64px)}
+.stage-bar{display:flex;align-items:center;gap:10px;padding:10px max(16px,2vw);border-top:1px solid var(--line);background:var(--surface)}
+.stage-bar button{border:1px solid var(--line);background:transparent;border-radius:8px;padding:7px 12px;font-weight:700;font-size:.9rem}
+.stage-bar button:hover{border-color:var(--ink)}
+.stage-bar .pos{font-family:var(--f-mono);font-size:.8rem;color:var(--muted);margin-right:auto;font-variant-numeric:tabular-nums}
+.prog{height:3px;background:var(--line)}
+.prog i{display:block;height:100%;background:var(--accent);transition:width .25s}
+.fig{margin:1em 0}.fig img{display:block;width:100%;max-height:70vh;object-fit:cover;border-radius:10px}
+.fig figcaption{font-size:.8rem;color:var(--muted);margin-top:6px}
+.embed16{position:relative;aspect-ratio:16/9;max-width:100%;margin:1em 0;border-radius:10px;overflow:hidden;background:var(--soft)}
+.embed16 iframe,.embedv iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.embedv{position:relative;width:100%;max-width:400px;aspect-ratio:9/15;margin:1em 0;border-radius:10px;overflow:hidden;background:var(--soft)}
+.embedv.tt{aspect-ratio:9/17}
+.stage .embed16{max-height:62vh;aspect-ratio:16/9;width:auto}
+@media (max-width:600px){ body{font-size:16px} .stage-bar .hide-sm{display:none} .crow{grid-template-columns:90px 1fr auto} }
+@media (prefers-reduced-motion:reduce){ *{transition:none!important;scroll-behavior:auto!important} }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><b>Comunicación Digital ESG</b><span>Diplomado en Sostenibilidad y Comunicación Corporativa · Prof. Diego Salas</span></div>
+    <nav class="tabs" role="tablist" id="tabs"></nav>
+    <div class="status" id="status" data-s="connecting" title="Estado de las encuestas"><i></i><span>Conectando encuestas…</span></div>
+  </div>
+</header>
+<main id="main"></main>
+<div class="stage" id="stage" hidden role="dialog" aria-label="Modo presentación">
+  <div class="prog"><i id="prog"></i></div>
+  <div class="stage-body" id="stageBody"><div class="stage-in" id="stageIn"></div></div>
+  <div class="stage-bar">
+    <span class="pos" id="pos">1 / 1</span>
+    <button id="sPrev" aria-label="Lámina anterior">← <span class="hide-sm">Anterior</span></button>
+    <button id="sNext" aria-label="Lámina siguiente"><span class="hide-sm">Siguiente</span> →</button>
+    <button id="sFull" class="hide-sm" title="Pantalla completa (F)">Pantalla completa</button>
+    <button id="sExit" title="Salir (Esc)">Salir</button>
+  </div>
+</div>
+
+<script>
+/* ---------- helpers for authoring ---------- */
+const st=(v,l)=>`<div class="stat"><div class="v">${v}</div><div class="l">${l}</div></div>`;
+const stats=(...a)=>`<div class="stats">${a.join("")}</div>`;
+const ul=(...a)=>`<ul class="pts">${a.map(x=>`<li>${x}</li>`).join("")}</ul>`;
+const box=(h,b)=>`<div class="box"><h3>${h}</h3>${b}</div>`;
+const cols=(...a)=>`<div class="cols">${a.join("")}</div>`;
+const call=(t,b)=>`<div class="callout"><b>${t}</b>${b}</div>`;
+const tbl=(head,rows)=>`<div class="tw"><table><thead><tr>${head.map(h=>`<th>${h}</th>`).join("")}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+const chart=(rows,max,fmt,note)=>`<div class="chart">${rows.map(([l,v,extra])=>`<div class="crow"><span class="cl">${l}</span><div class="ctrack"><div class="cbar" style="width:${(v/max*100).toFixed(1)}%"></div></div><span class="cv">${fmt(v)}${extra?" · "+extra:""}</span></div>`).join("")}${note?`<div class="cnote">${note}</div>`:""}</div>`;
+const steps=(...a)=>`<ol class="steps">${a.map(([b,t])=>`<li><b>${b}</b>${t}</li>`).join("")}</ol>`;
+const foto=(src,alt,cap)=>`<figure class="fig"><img src="${src}" alt="${alt}" loading="lazy">${cap?`<figcaption>${cap}</figcaption>`:""}</figure>`;
+const ytEmbed=(id,title)=>`<div class="embed16"><iframe src="https://www.youtube-nocookie.com/embed/${id}" title="${title||"Video de YouTube"}" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>`;
+const igEmbed=code=>`<div class="embedv"><iframe src="https://www.instagram.com/p/${code}/embed" title="Publicación de Instagram" loading="lazy"></iframe></div>`;
+const ttEmbed=id=>`<div class="embedv tt"><iframe src="https://www.tiktok.com/embed/v2/${id}" title="Video de TikTok" loading="lazy" allow="encrypted-media; fullscreen" allowfullscreen></iframe></div>`;
+const yt=q=>"https://www.youtube.com/results?search_query="+encodeURIComponent(q);
+
+/* ---------- fuentes reutilizables ---------- */
+const S={
+  dr26:["DataReportal · Digital 2026 Global Overview","https://datareportal.com/reports/digital-2026-global-overview-report"],
+  was26:["We Are Social · Digital 2026 (análisis)","https://wearesocial.com/uk/blog/2025/10/digital-2026-global-overview-report"],
+  lbb:["LBB · resumen Digital 2026","https://lbbonline.com/news/We-Are-Social-Digital-2026-Report"],
+  bern:["Bernama · Digital 2026, descubrimiento de marcas","https://bernama.com/lite/news.php?id=2479172"],
+  drcl:["DataReportal · Digital 2026: Chile","https://datareportal.com/reports/digital-2026-chile"],
+  smt:["Social Media Today · alcance de plataformas 2026","https://socialmediatoday.com/news/meta-still-has-widest-social-media-reach/825259"],
+  jelly:["24 Horas · Estudio Jelly sobre redes en Chile","https://www.24horas.cl/tendencias/tecnologia-y-ciencias/estudio-jelly-informacion-redes-sociales-memes"],
+  soul:["Radio Agricultura · Estudio SOUL 2025","https://www.radioagricultura.cl/tendencias/estudio-revela-habitos-digitales-chilenos-11-horas-semanales-en-redes-y-alta-polarizacion_20251121/"],
+  sprout:["Sprout Social · Q1 2026 Pulse Survey","https://sproutsocial.com/insights/press/social-media-is-now-the-top-source-for-breaking-news-new-sprout-social-research-finds/"],
+  clutch:["Clutch · Consumidores e IA en redes (sept. 2026)","https://clutch.co/press-releases/ai-social-media-report"],
+  igalgo:["wwwhatsnew · Tu Algoritmo llega al feed (jun. 2026)","https://wwwhatsnew.com/2026/06/29/instagram-tu-algoritmo-central-feed-mosseri-junio-2026/"],
+  igrank:["Picmim · cómo funciona el algoritmo de Instagram 2026","https://blog.picmim.com/blog/instagram-algorithm-2026-how-it-works"],
+  ttalgo:["Hootsuite · algoritmo de TikTok 2026","https://blog.hootsuite.com/tiktok-algorithm/"],
+  ttnov:["Metricool · novedades de TikTok","https://metricool.com/es/novedades-tiktok/"],
+  spark:["TechWyse · datos SparkToro sobre búsquedas sin clic 2026","https://www.techwyse.com/news/reports-data/google-zero-click-searches-68-percent-2026"],
+  aimode:["Let's Data Science · AI Mode y AI Overviews","https://letsdatascience.com/news/google-introduces-ai-search-bar-reshaping-traffic-flow-899e8bb6"],
+  emk:["eMarketer · AI Overviews y GEO","https://www.emarketer.com/content/google-expands-ai-overviews-deepening-zero-click-search-behavior"],
+  cadem:["Emol · Encuesta Cadem sobre IA (abr. 2026)","https://www.emol.com/noticias/Nacional/2026/04/15/1197157/cadem-inteligencia-artificial-encuesta-chile.html"],
+  bain:["Bain & Company · Consumer Pulse 2026","https://www.bain.com/es/about/media-center/press-releases/south-america/2026/el-72-de-los-consumidores-chilenos-usa-o-ha-usado-la-inteligencia-artificial/"],
+  knot:["Global Dating Insights · The Knot 2025","https://www.globaldatinginsights.com/featured/dating-apps-account-for-over-a-quarter-of-u-s-marriages-in-2025/"],
+  stan:["Statista · Cómo se conocen las parejas (Stanford)","https://statista.com/chart/amp/20822/way-of-meeting-partner-heterosexual-us-couples"],
+  edel:["Edelman Trust Barometer 2026","https://www.edelman.com/index.php/news-awards/2026-edelman-trust-barometer-society-slides-into-insularity"],
+  klm:["Al Jazeera · fallo contra KLM por greenwashing","https://www.aljazeera.com/amp/news/2024/3/20/dutch-court-finds-airline-guilty-of-greenwashing"],
+  hush:["Marketing Directo · greenhushing (South Pole)","https://www.marketingdirecto.com/marketing-general/trasformacion-sostenible-mut/marcas-dejan-sostenibilidad-penumbra"],
+  blab:["B Lab · Greenshouting Guide","https://www.bcorporation.net//news/press/silence-is-the-new-greenwashing-b-lab-and-creatives-for-climate-launch-framework-to-break-corporate-paralysis"],
+  sisb:["El Desconcierto · Guía de Greenshouting en Chile","https://eldesconcierto.cl/hoja-ruta/guia-greenshouting-sistema-b-propone-comunicar-la-sostenibilidad-datos-y-greenwashing-n5460691"],
+  desc:["El Desconcierto · del greenwashing al greenhushing","https://eldesconcierto.cl/hoja-ruta/del-greenwashing-al-greenhushing-cuando-las-empresas-no-comunican-sus-practicas-sostenibilidad-n5458975"],
+  cmf:["CMF · Sostenibilidad, NCG 461 y 519","https://www.cmfchile.cl/portal/principal/623/w4-propertyvalue-50301.html"],
+  udd:["UDD · Transición a NIIF S1 y S2 (NCG 519)","https://derecho.udd.cl/actualidad-juridica/files/2026/09/13-gaspar.pdf"],
+  apple:["Cannes Lions · Apple Mother Nature","https://lovethework.com/work-awards/campaigns/mother-nature-1617668"],
+  applecrit:["Crítica: Apple’s Two-Faced Sustainability","https://blogs.charleston.edu/writing/?p=28515"],
+  pata:["Fast Company · Patagonia y The Shitthropocene","https://www.fastcompany.com/91113831/patagonia-wants-you-to-stop-buying-crap"],
+  patacrit:["Lineapelle · el riesgo de reducir la sostenibilidad a un chiste","https://magazine.lineapelle-fair.it/en/green-corner-en/the-risk-of-reducing-sustainability-to-a-joke/"],
+  algramo:["PNUMA · José Manuel Moller (Algramo)","https://unep.org/youngchampions/pt-br/node/297"],
+  algramo2:["La Tercera · Algramo","https://www.latercera.com/etiqueta/algramo/"],
+  infl:["Markerly · tendencias de influencer marketing","https://markerly.com/academy/emerging-trends"],
+  b2b:["Directive · B2B influencer y employee advocacy 2026","https://directiveconsulting.com/blog/blog-b2b-influencer-marketing-trends/"],
+  later:["Later · tendencias de influencers 2026","https://later.com/blog/top-influencer-trends-2026-how-brands-should-respond/"],
+  vidia:["Javadex · herramientas de video con IA 2026","https://www.javadex.es/blog/mejores-herramientas-ia-crear-videos-ranking-completo-2026"],
+  sora:["Ecosistema Startup · alternativas tras el cierre de Sora","https://ecosistemastartup.com/alternativas-a-sora-mejores-herramientas-ia-video-2026/"],
+};
+
+/* ---------- CONTENIDO ---------- */
+const CLASSES=[
+{ id:"c1", n:1, title:"El panorama digital en 2026", sub:"Plataformas, usuarios, algoritmos y confianza: el terreno donde se juega hoy la comunicación de sostenibilidad, con foco en Chile.",
+slides:[
+ {cover:1,k:"Clase 1 de 3",t:"El panorama digital en 2026",b:`<div class="bignum">01</div><p class="lead">Dónde está la gente, cómo decide qué ver y por qué eso cambia la forma de comunicar sostenibilidad.</p><p>Abre este sitio en tu celular: durante la clase vamos a votar en vivo.</p>`},
+ {k:"Hoja de ruta",t:"Qué vamos a ver hoy",b:steps(["El mundo","Usuarios y plataformas a escala global"],["Chile","Quiénes están, dónde y cómo usan las redes"],["Algoritmos","Por qué el seguidor ya no garantiza alcance"],["Búsqueda e IA","El fin del clic y el auge de las respuestas"],["Confianza","Quién le cree a quién en 2026"],["ESG","Greenwashing, greenhushing y una regla para comunicar"])+`<p class="muted">El módulo completo: Clase 1 contexto · Clase 2 contenidos · Clase 3 estrategia y trabajo final.</p>`},
+ {k:"Encuesta",t:"Empecemos por ti",poll:{id:"c1_tiempo",q:"¿Cuánto tiempo al día pasas en redes sociales (sin contar trabajo)?",o:["Menos de 1 hora","Entre 1 y 2 horas","Entre 2 y 5 horas","Más de 5 horas","No tengo idea, y eso me preocupa"],ref:"En el estudio de Jelly (personas de 15 a 55 años en Chile), 62% declaró pasar entre 2 y 5 horas diarias y 16% más de 5 horas. El estudio SOUL 2025, que mide actividad, calcula 11 h 28 min semanales: autodeclarado y medido rara vez coinciden."},src:[S.jelly,S.soul]},
+ {k:"El mundo",t:"Las redes sociales ya son una supermayoría",b:stats(st("6.000 M","personas usan internet en el mundo"),st("5.660 M","identidades activas en redes sociales: 68,7% de la población"),st("6,75","plataformas distintas usa al mes un usuario típico"),st("16 h 13 min","a la semana en redes y video en línea (adultos)"))+`<p>En un año se sumaron 259 millones de nuevas identidades en redes (+4,8%). Y algo nuevo: más de mil millones de personas ya usan herramientas de IA generativa cada mes.</p>`+call("Para la estrategia","La pregunta ya no es si tu público está en redes, sino en cuáles de sus casi siete plataformas y en qué momento del día."),src:[S.dr26,S.was26,S.lbb]},
+ {k:"El mundo",t:"Las plataformas más grandes",b:chart([["Facebook",3.0,"Meta"],["WhatsApp",3.0,"Meta"],["Instagram",3.0,"Meta"],["YouTube",2.7],["TikTok",1.6,"sin dato oficial reciente"],["Snapchat",0.956],["Pinterest",0.631],["X",0.55],["Threads",0.5,"Meta"],["LinkedIn",0.416,"estimado activo"]],3.0,v=>v>=1?v.toFixed(1).replace(".",",")+" mil M":Math.round(v*1000)+" M","Usuarios activos mensuales, en miles de millones (mil M) o millones (M). Fuentes mixtas: reportes de las empresas y estimaciones. LinkedIn tiene 1.300 M de miembros, pero se estima que solo un tercio entra cada mes.")+`<p>Meta reportó 3.560 millones de usuarios únicos en su familia de apps en el primer trimestre de 2026, y fue su primera baja trimestral desde que publica la cifra.</p>`,src:[S.smt]},
+ {k:"Chile",t:"Chile: un país hiperconectado",b:stats(st("19,9 M","habitantes (oct. 2025)"),st("94,5%","usa internet: 18,8 millones de personas"),st("81,7%","tiene identidad activa en redes: 16,2 millones"),st("36,9 años","edad mediana de la población"))+`<p>Las identidades en redes crecieron 9,7% en un año. La velocidad móvil típica se duplicó y supera los 84 Mbps: el video vertical ya no tiene barreras técnicas.</p>`,src:[S.drcl]},
+ {k:"Chile",t:"¿Dónde está la audiencia chilena?",b:chart([["TikTok (18+)",16.2,"+16,4%"],["YouTube",14.9,"+0,7%"],["Instagram",13.5,"+8,9%"],["Facebook",13.1,"+3,6%"],["LinkedIn*",10.0,"+12,4%"],["Messenger",7.45,"−0,7%"],["Pinterest",5.36,"+4,2%"],["X",3.25,"−6,5%"],["Reddit",2.8],["Threads",1.6],["Snapchat",0.645,"−12,2%"]],16.2,v=>v.toFixed(v<1?2:1).replace(".",",")+" M","Alcance publicitario a fines de 2025, en millones, y variación anual. No son usuarios activos: son las audiencias que cada plataforma declara a los anunciantes. *LinkedIn informa miembros registrados, no activos.")+call("Ojo con el dato","TikTok declara alcanzar más adultos que los que existen en Chile (102,5%). Las cifras de plataformas sirven para comparar tendencias, no para contar personas."),src:[S.drcl]},
+ {k:"Encuesta",t:"Tu red favorita",poll:{id:"c1_red",q:"Si mañana solo pudieras conservar una app, ¿cuál sería?",o:["WhatsApp","Instagram","TikTok","YouTube","LinkedIn","Facebook","X o Threads"],ref:"En Chile, Instagram y TikTok empatan como las redes más usadas (83,5% cada una) entre usuarios de 18 a 35 años en el estudio de Jelly. TikTok es la de mayor crecimiento: +2,29 millones de adultos alcanzables en 2025."},src:[S.jelly,S.drcl]},
+ {k:"Chile",t:"Para qué usan las redes los chilenos",b:cols(box("Lo que buscan",ul("Humor y memes: 75%","Tips y consejos: 68%","Tutoriales: 60%")+`<p class="muted">Estudio Jelly, respuesta múltiple.</p>`),box("Para informarse",`<p>51% usa las redes como fuente de información. Las redes ya compiten con los medios en la agenda pública.</p>`),box("El clima",`<p>El estudio SOUL describe 2025 como un año de alta polarización: las redes como espacio donde se expresa la emoción colectiva, no solo el entretenimiento.</p>`))+call("Conexión con ESG","Un reporte de sostenibilidad compite por atención con memes y tutoriales. Si tu contenido no entretiene, enseña o resuelve algo, no entra en la conversación."),src:[S.jelly,S.soul]},
+ {k:"Encuesta",t:"¿Dónde te enteras de las noticias?",poll:{id:"c1_noticias",q:"¿Dónde te enteraste de la última gran noticia que leíste?",o:["Redes sociales","TV o radio","Sitio o app de un medio","Me la contaron por WhatsApp","Newsletter o podcast"],ref:"Según Sprout Social (EE.UU., Reino Unido y Australia, febrero 2026), las redes ya superan a la TV como primera fuente de noticias de última hora. Pero 88% dice confiar menos en lo que ve por el auge del video generado con IA."},src:[S.sprout]},
+ {k:"Algoritmos",t:"El fin del feed de amigos",b:`<p class="lead">Hoy la mayor parte de lo que vemos no viene de cuentas que seguimos, sino de sistemas de recomendación que predicen qué nos va a retener.</p>`+cols(box("Alcance conectado","Lo que llega a tus seguidores. Cada vez es una porción menor del total."),box("Alcance no conectado","Lo que el algoritmo muestra a quienes no te siguen. Aquí está el crecimiento, y se gana con contenido, no con seguidores."))+`<p>Instagram describe su sistema como una especie de audición: el contenido se prueba con un grupo pequeño y, si funciona, se amplía. Una cuenta pequeña puede llegar a cientos de miles de personas.</p>`,src:[S.igrank]},
+ {k:"Algoritmos",t:"Qué premian las plataformas en 2026",b:tbl(["Plataforma","Señales que más pesan","Novedad reciente"],[["Instagram","Tiempo de visualización, envíos por mensaje directo, contenido original","«Tu Algoritmo»: el usuario elige temas que quiere ver más o menos. Partió en Reels (dic. 2025) y se prueba en el feed principal (jun. 2026)"],["TikTok","Retención, repeticiones, comentarios, guardados y valor de búsqueda","Funciona como buscador; premia audio original y videos más largos; TikTok Shop y notas de contexto (Footnotes)"],["YouTube","Retención y satisfacción del espectador","Shorts como puerta de entrada al video largo"],["LinkedIn","Conversación entre profesionales, perfiles personales por sobre páginas de empresa","Auge del video y de la voz de expertos y trabajadores"]])+`<p class="muted">Consejos que la propia Instagram ha repetido para Reels: gancho en los primeros 2 segundos, subtítulos, audio, contenido original sin marcas de agua.</p>`,src:[S.igalgo,S.igrank,S.ttalgo,S.ttnov],vid:[["Adam Mosseri explica el ranking de Instagram",yt("Adam Mosseri how Instagram ranking works 2026")]]},
+ {k:"Búsqueda e IA",t:"Buscar ya no significa hacer clic",b:stats(st("68%","de las búsquedas en Google (EE.UU.) terminan sin clic a ningún sitio, enero a abril 2026"),st("~93%","de las sesiones en AI Mode de Google terminan sin clic"),st("2.500 M","usuarios mensuales ven AI Overviews; AI Mode supera los 1.000 M"))+`<p>La respuesta se entrega en la página de resultados o en el chat de una IA. Para una empresa, el objetivo cambia: además de atraer visitas, hay que ser la fuente que la IA cita cuando alguien pregunta por ella.</p>`+call("Nuevo concepto: GEO","Generative Engine Optimization. Datos claros, verificables y bien estructurados en tu web (reporte, preguntas frecuentes, cifras con fecha) aumentan la probabilidad de que una IA te cite correctamente."),src:[S.spark,S.aimode,S.emk]},
+ {k:"Encuesta",t:"¿Te basta la respuesta de la IA?",poll:{id:"c1_clic",q:"La última vez que buscaste algo en Google o en una IA, ¿entraste a algún sitio?",o:["Sí, siempre reviso las fuentes","A veces, si me interesa mucho","No, me bastó con la respuesta","Ya casi no uso Google, le pregunto a una IA"],ref:"SparkToro midió que 68% de las búsquedas en Google terminan sin clic. Cuando alguien pregunte «¿qué hace la empresa X por el agua?», ¿qué responderá la IA?"},src:[S.spark]},
+ {k:"Usuarios",t:"Quién es el usuario de 2026",b:cols(box("Descubre por redes","Para personas de 16 a 34 años, los anuncios en redes son la primera vía para conocer marcas, por sobre buscadores y TV (34,2% entre 16 y 24 años)."),box("Llena tiempo","Después de mantenerse en contacto con cercanos, el segundo motivo para usar redes es llenar tiempo libre. Atención breve y distraída."),box("Desconfía","Ve contenido generado con IA a diario y se vuelve más selectivo: dos de cada tres usuarios dicen interactuar con menos cosas que hace un año."),box("Usa IA","69% de los chilenos dice usar IA en su vida cotidiana (49% en 2025). La IA ya es un intermediario entre marcas y personas."))+`<p class="muted">Implicancia: menos mensajes institucionales y más contenido útil, breve, verificable y con rostro humano.</p>`,src:[S.bern,S.sprout,S.cadem]},
+ {k:"Encuesta",t:"Las plataformas también median el amor",poll:{id:"c1_citas",q:"¿Conoces a alguien que haya conocido a su pareja por una app de citas?",o:["Sí, a varias personas","Sí, a una persona","No, a nadie","Sí: yo"],ref:"27% de las parejas que se casaron en EE.UU. en 2025 se conoció en una app o sitio de citas (The Knot), el canal más común. Las plataformas no solo distribuyen contenido: organizan relaciones, decisiones y confianza."},src:[S.knot,S.stan]},
+ {k:"Confianza",t:"En 2026 la confianza se volvió local",b:`<p class="lead">El Barómetro de Confianza de Edelman 2026 describe un mundo que se repliega hacia círculos cercanos: se confía en lo próximo y se desconfía de lo institucional.</p>`+stats(st("78%","confía en su propio empleador: la institución mejor evaluada"),st("64%","confía en las empresas en general"),st("53%","confía en el gobierno"))+call("Para la comunicación ESG","Trabajadores, vecinos y líderes locales son hoy voceros más creíbles que la cuenta de la marca. La comunicación interna deja de ser un canal secundario."),src:[S.edel]},
+ {k:"Sostenibilidad",t:"Entre el greenwashing y el silencio",b:cols(box("Greenwashing","Afirmar más de lo que se hace. En 2024 un tribunal neerlandés declaró engañosa la campaña «Fly Responsibly» de KLM por sugerir que volar podía ser sostenible."),box("Greenhushing","Callar avances reales por miedo a ser criticado. Según South Pole, 58% de las marcas redujo deliberadamente su comunicación de sostenibilidad."),box("Lo que viene","En la Unión Europea, desde el 27 de septiembre de 2026 rige una directiva que endurece las afirmaciones ambientales genéricas. B Lab y Sistema B lanzaron en 2026 la Guía de Greenshouting para comunicar con evidencia."))+`<p>Un estudio de la Comisión Europea encontró que 53% de las afirmaciones ambientales revisadas eran vagas, engañosas o infundadas.</p>`,src:[S.klm,S.hush,S.blab,S.sisb,S.desc]},
+ {k:"Chile",t:"Más datos ESG, más escrutinio",b:`<p>En Chile, la CMF exige desde 2021 integrar información de sostenibilidad en la memoria anual (NCG 461). La NCG 519 adopta los estándares internacionales NIIF S1 y S2: aplican a los ejercicios iniciados en 2026, que se reportan en 2027.</p>`+cols(box("Oportunidad","Las empresas tendrán más datos comparables y verificables. Es materia prima para contenido creíble."),box("Riesgo","Lo que se diga en redes podrá contrastarse con el reporte oficial. Una frase vaga en Instagram que contradice la memoria es un problema reputacional."))+call("Idea fuerza","El área de comunicaciones tiene que trabajar con el área de sostenibilidad, no después de ella."),src:[S.cmf,S.udd]},
+ {k:"Encuesta",t:"¿Y en tu organización?",poll:{id:"c1_comunica",q:"Tu organización, ¿comunica sus acciones de sostenibilidad en redes sociales?",o:["Sí, de forma regular y con datos","A veces, sobre todo en fechas especiales","Casi nunca, aunque hay cosas que contar","No hace mucho y prefiere no exponerse","No lo sé"],ref:"58% de las marcas ha reducido deliberadamente esta comunicación (South Pole). ¿Tu organización practica greenhushing sin saberlo?"},src:[S.hush]},
+ {k:"Caso",t:"Apple y la Madre Naturaleza",b:`<p>En 2023 Apple presentó un video donde la Madre Naturaleza (Octavia Spencer) interroga a Tim Cook y su equipo sobre su meta de carbono neutral al 2030. Tuvo 4,5 millones de vistas en YouTube y ganó en Cannes Lions.</p>`+cols(box("Lo que funcionó",ul("Humor y autocrítica para un tema árido","El CEO y ejecutivos reales como voceros","Datos concretos: aluminio reciclado, energía limpia, transporte")),box("Lo que se criticó",ul("Los productos «carbono neutral» dependían en parte de créditos de carbono","El video terminaba siendo el lanzamiento de un producto","Comentarios desactivados en YouTube")))+call("Para discutir","¿Es greenwashing, comunicación valiente o ambas cosas? ¿Qué habrías cambiado?"),src:[S.apple,S.applecrit],vid:[["Ver «Mother Nature» de Apple",yt("Apple Mother Nature Octavia Spencer carbon neutral 2030")]]},
+ {k:"Caso",t:"Patagonia y la era de la basura barata",b:`<p>En 2024 Patagonia publicó «The Shitthropocene», un falso documental de 45 minutos en YouTube sobre el consumo de ropa de mala calidad. Humor, historia de la moda y entrevistas a su propio equipo.</p>`+cols(box("Lo que funcionó",ul("Formato largo en una era de videos cortos: profundidad como diferencia","Admitir la contradicción de crecer vendiendo con un mensaje anticonsumo","Pide una acción concreta: comprar menos, reparar, revender")),box("Lo que se criticó",ul("Una investigación periodística mostró proveedores compartidos con marcas de moda rápida","El humor puede trivializar el problema")))+call("Para discutir","¿Puede una marca que vende ropa pedir que compremos menos?"),src:[S.pata,S.patacrit],vid:[["Ver «The Shitthropocene» (con subtítulos)",yt("Patagonia The Shitthropocene full film")]]},
+ {k:"Síntesis",t:"Cinco principios para una estrategia digital ESG",b:steps(["Dato antes que adjetivo","«Redujimos 18% el agua por tonelada» en vez de «somos sustentables»."],["Progreso imperfecto","Contar lo que falta genera más confianza que la perfección."],["Personas como voceros","Trabajadores, vecinos y expertos: la confianza es local."],["Cada público en su plataforma","No hay una red para todos; hay un rol para cada red."],["Escuchar y conversar","Comentarios abiertos, respuestas y ajustes visibles."])},
+ {k:"Para la próxima clase",t:"Tarea de observación",b:`<p class="lead">Elige tres cuentas de empresas o instituciones que comuniquen sostenibilidad (al menos una chilena) y anota:</p>`+ul("¿En qué plataformas están y qué rol cumple cada una?","¿Usan datos concretos o adjetivos?","¿Quién habla: la marca, personas, expertos?","¿Cómo responden los comentarios?","¿Qué pieza te detuvo el scroll y por qué?")+`<p class="muted">Lo usaremos para abrir la Clase 2 sobre contenidos.</p>`},
+]},
+
+{ id:"c2", n:2, title:"Contenidos que conectan", sub:"Cómo captar atención sin perder credibilidad: formatos, tendencias, influencers y voceros, y cómo usar la IA para producir mejor sin caer en el «AI slop».",
+slides:[
+ {cover:1,k:"Clase 2 de 3",t:"Contenidos que conectan",b:`<div class="bignum">02</div><p class="lead">De lo que la organización quiere decir a lo que a su audiencia le importa.</p>`},
+ {k:"Hoja de ruta",t:"Qué vamos a ver hoy",b:steps(["Atención","Cómo se gana en los primeros segundos"],["Conexión","Traducir datos en historias"],["Formatos","Qué funciona en 2026"],["Voces","Influencers, expertos y trabajadores"],["IA","Usarla bien, declararla siempre"],["Taller","Un dato, tres públicos, tres piezas"])},
+ {k:"Encuesta",t:"¿Qué te detiene el scroll?",poll:{id:"c2_scroll",q:"¿Qué tipo de contenido es más probable que te haga detenerte?",o:["Humor y memes","Tips y consejos prácticos","Tutoriales paso a paso","Historias reales de personas","Datos o noticias sorprendentes","Detrás de cámaras de cómo se hace algo"],ref:"En Chile, el humor y los memes lideran (75%), seguidos de tips y consejos (68%) y tutoriales (60%), según Jelly. La sostenibilidad casi nunca se cuenta en esos formatos."},src:[S.jelly]},
+ {k:"Atención",t:"Los primeros dos segundos",b:cols(box("El gancho","Una pregunta, un dato inesperado, una imagen que no calza o una tensión: «Esta planta usa la mitad del agua que hace cinco años. Te mostramos cómo»."),box("La retención","El algoritmo mide si te quedas. Ritmo, subtítulos (la mayoría ve sin sonido) y una promesa que se cumple al final."),box("Lo compartible","En Instagram, los envíos por mensaje directo pesan más que los likes para llegar a nuevas personas. Pregúntate: ¿alguien se lo mandaría a un amigo?"))+call("Prueba rápida","Si el primer segundo de tu video es un logo, ya lo perdiste."),src:[S.igrank]},
+ {k:"Conexión",t:"Dónde se cruzan tres círculos",b:`<p class="lead">El contenido que conecta está en la intersección de lo que le importa a la audiencia, lo que la organización puede demostrar y lo que está pasando en la cultura.</p>`+cols(box("Lo que le importa a la audiencia","Su bolsillo, su salud, su barrio, su trabajo, su tiempo."),box("Lo que la organización puede probar","Datos, procesos, personas reales, avances y también pendientes."),box("El momento cultural","Una tendencia, una fecha, una conversación pública, un formato de moda."))+`<p>Si solo hay organización, es un comunicado. Si solo hay tendencia, es oportunismo. Si falta la audiencia, nadie lo ve.</p>`},
+ {k:"Conexión",t:"Traducir un dato de sostenibilidad",b:`<p>Dato del reporte: <b>«Reducción de 1.200 tCO₂e en 2025 por cambio a electricidad renovable»</b>.</p>`+tbl(["Traducción","Cómo se ve"],[["Equivalencia cotidiana","Lo mismo que dejar de usar cientos de autos durante un año (calcula la equivalencia con una fuente oficial y cítala)"],["Historia humana","El jefe de mantención cuenta en 40 segundos qué cambió en su turno"],["Antes y después","Dos boletas, dos tableros, dos fotos de la misma instalación"],["Proceso transparente","Cómo lo medimos, quién lo verificó y qué falta"],["Interactivo","Encuesta en historias: «¿Cuánto crees que bajamos?»"]])+call("Regla","Cifra + contexto + fuente + fecha. Sin una de las cuatro, el dato pierde fuerza o se vuelve riesgoso.")},
+ {k:"Formatos",t:"Lo que funciona en 2026",b:tbl(["Formato","Para qué sirve","Dónde"],[["Video vertical corto","Descubrimiento, alcance a nuevas personas","Reels, TikTok, Shorts"],["Carrusel educativo","Explicar un proceso, guardar y compartir","Instagram, LinkedIn"],["Video largo o documental","Profundidad, credibilidad, buscadores","YouTube, web"],["Post en primera persona","Liderazgo de opinión, reclutamiento","LinkedIn"],["Transmisión en vivo","Rendición de cuentas, preguntas abiertas","Instagram, YouTube, LinkedIn"],["Canal o comunidad","Comunicación directa con trabajadores y vecinos","WhatsApp, Telegram, grupos de Facebook"],["Contenido de usuarios","Prueba social, autenticidad","Todas"]])},
+ {k:"Tendencias",t:"Lo auténtico le gana a lo pulido",b:ul("<b>Estética imperfecta:</b> grabado con celular, cámara en mano, luz natural. La propia Instagram ha dicho que lo pulido pierde frente a lo crudo.","<b>Series:</b> un formato que se repite (cada lunes, un trabajador explica su rol en la planta).","<b>Explicadores:</b> «¿Qué es la Ley REP en 60 segundos?»","<b>Un día en la vida:</b> la bióloga que monitorea el humedal.","<b>Humor de marca:</b> cuentas que se ríen de sí mismas y conversan en los comentarios.","<b>Búsqueda social:</b> títulos y subtítulos con las palabras que la gente busca dentro de TikTok o Instagram.")+call("Cuidado","El humor funciona con temas cotidianos. En temas de impacto en comunidades o seguridad, el tono importa más que el alcance."),src:[S.igalgo,S.ttalgo],vid:[["Duolingo en TikTok (humor de marca)","https://www.tiktok.com/@duolingo"],["Ryanair en TikTok (marca que se ríe de sí misma)","https://www.tiktok.com/@ryanair"]]},
+ {k:"Encuesta",t:"Influencers",poll:{id:"c2_influ",q:"¿Sigues activamente a algún influencer o creador de contenido?",o:["Sí, a varios y les hago caso","Sí, pero no compraría nada por ellos","Solo a divulgadores o expertos","No sigo a ninguno"],ref:"71% de los consumidores en EE.UU. dudaría de la recomendación de un influencer si supiera que usó IA para crear su contenido (Clutch, 2026). La confianza es el activo, no los seguidores."},src:[S.clutch]},
+ {k:"Voces",t:"Influencers en 2026: menos alcance, más confianza",b:stats(st("+US$40 mil M","mercado global proyectado para 2026"),st("53,8%","de los marketers B2B prioriza nano y microinfluencers"),st("10×","más grandes son las redes de los trabajadores que los seguidores de su empresa"))+tbl(["Tipo","Seguidores","Úsalo para"],[["Nano y micro","1.000 a 100.000","Comunidades específicas, confianza, conversión"],["Divulgadores y expertos","Variable","Explicar temas técnicos con credibilidad"],["Macro y celebridades","Más de 500.000","Lanzamientos y picos de alcance"],["Trabajadores y líderes","Su propia red","Comunicación interna y reputación"]])+call("Requisitos ESG","Alineación real de valores, relación de largo plazo, publicidad declarada y libertad para que el creador opine."),src:[S.infl,S.b2b,S.later]},
+ {k:"Encuesta",t:"¿En quién confías?",poll:{id:"c2_confia",q:"Si una empresa minera anuncia que redujo su consumo de agua, ¿a quién le creerías más?",o:["Al gerente general","A una trabajadora de la faena","A un científico independiente","A un vecino de la comunidad","A un influencer conocido","A la cuenta oficial de la empresa"],ref:"El Barómetro de Edelman 2026 muestra que la confianza se concentra en lo cercano: el propio empleador (78% entre trabajadores), compañeros de trabajo y vecinos ganan confianza mientras caen gobiernos y medios."},src:[S.edel]},
+ {k:"Encuesta",t:"La IA en tu trabajo",poll:{id:"c2_iatrabajo",q:"¿Usas inteligencia artificial en tu trabajo?",o:["Sí, todos los días","Sí, algunas veces a la semana","Ocasionalmente","No, pero quiero aprender","No, y no me interesa"],ref:"48% de los chilenos usa IA en su trabajo (34% en 2025), según Cadem, abril 2026. 64% cree que en su trabajo se nota quién sabe usarla y quién no."},src:[S.cadem]},
+ {k:"IA en Chile",t:"La IA se volvió cotidiana en un año",b:stats(st("69%","usa IA en su vida diaria (49% en 2025)"),st("48%","la usa en el trabajo (34% en 2025)"),st("44%","recibió información de una IA que luego resultó equivocada"),st("87%","cree que la IA debe regularse"))+chart([["ChatGPT",86],["Gemini",74],["Copilot",42],["Perplexity",25],["Adobe Firefly",22],["Claude",16],["Midjourney",13]],100,v=>v+"%","Porcentaje que ha oído hablar de cada herramienta. Cadem, abril 2026.")+`<p class="muted">Bain & Company: 72% de los consumidores chilenos usa o ha usado IA, con ChatGPT y Gemini a la cabeza.</p>`,src:[S.cadem,S.bain]},
+ {k:"Encuesta",t:"Tu IA de cabecera",poll:{id:"c2_iapref",q:"¿Cuál es la IA que más usas?",o:["ChatGPT","Gemini","Claude","Copilot","Meta AI (WhatsApp, Instagram)","Perplexity","Otra","No uso ninguna"],ref:"En Chile, ChatGPT es la más conocida (86%) seguida de Gemini (74%) y Copilot (42%), según Cadem."},src:[S.cadem]},
+ {k:"Encuesta",t:"Una pregunta más personal",poll:{id:"c2_iapersonal",q:"¿Alguna vez le contaste a una IA algo personal que te costaría contarle a otra persona?",o:["Sí","No","Prefiero no responder"],ref:"28% de los chilenos dice haberlo hecho; entre quienes tienen 18 a 34 años sube a 45% (Cadem, 2026). La IA se convirtió en un espacio de confianza, y por lo tanto en un nuevo canal donde se forma la reputación de las organizaciones."},src:[S.cadem]},
+ {k:"Encuesta",t:"Contenido hecho con IA",poll:{id:"c2_slop",q:"Cuando notas que un contenido en redes fue hecho con IA, ¿qué haces?",o:["Me da igual si está bueno","Lo veo, pero confío menos en quien lo publica","Lo salto","He dejado de seguir cuentas por eso","Casi nunca lo noto"],ref:"56% ve «AI slop» (contenido de IA de baja calidad) a menudo, y la mitad de la Generación Z ya bloqueó o dejó de seguir una marca por eso (Sprout Social, 2026)."},src:[S.sprout]},
+ {k:"IA",t:"El costo de usar mal la IA",b:stats(st("86%","ha visto contenido generado con IA en redes"),st("~90%","espera que marcas y creadores declaren cuando usan IA"),st("53%","sería menos propenso a comprar a marcas que usan IA en redes"),st("42%","ve con buenos ojos la IA en contenido educativo"))+`<p>Lo que la audiencia más pide a las marcas en 2026 es dejar de publicar contenido hecho con IA sin rotularlo (Sprout Social). El rechazo no es a la herramienta: es al engaño y a la mala calidad.</p>`+call("Para ESG es doble","Un tema que ya genera sospecha de greenwashing se vuelve más frágil si además parece fabricado."),src:[S.clutch,S.sprout]},
+ {k:"IA",t:"Un flujo de trabajo con humanos al centro",b:steps(["Investigar","Resumir reportes, encontrar datos, mapear la conversación. Verificar siempre en la fuente original."],["Idear","Generar 20 ángulos y ganchos; elegir 3 con criterio humano."],["Redactar","Borradores por público y plataforma con una guía de tono."],["Producir","Subtítulos, traducciones, adaptaciones de formato, apoyo visual."],["Revisar","Datos, tono, sesgos y riesgo legal. Una persona responde por cada pieza."],["Declarar","Rotular lo generado con IA y nunca presentar personas sintéticas como reales."])},
+ {k:"IA",t:"Cómo pedirle bien a una IA",b:`<p>Una fórmula simple: <b>rol + contexto + tarea + formato + restricciones + ejemplo</b>. Copia este prompt y adáptalo:</p><div class="prompt" id="prompt1"><button class="copy" data-copy="prompt1">Copiar</button>Actúa como editor de redes sociales de una empresa sanitaria chilena.
+Contexto: nuestro reporte 2025 dice que redujimos 12% las pérdidas de agua en la red de Rancagua, gracias al reemplazo de 40 km de cañerías. Público: vecinos de Rancagua de 30 a 60 años, escépticos por los cortes de agua del último verano.
+Tarea: propón 5 ganchos para un Reel de 30 segundos y desarrolla el guion del mejor.
+Formato: tabla con gancho, idea visual y texto en pantalla; luego el guion con tiempos.
+Restricciones: tono cercano y sin tecnicismos; no prometas nada que no esté en el dato; reconoce que aún hay trabajo pendiente; nada de «sustentable» ni «comprometidos».
+Ejemplo de tono: «Sabemos que el verano fue difícil. Esto es lo que cambiamos bajo tus calles.»</div><p class="muted">Nunca pegues datos confidenciales, personales o no publicados en una IA sin autorización de tu organización.</p>`},
+ {k:"IA",t:"Herramientas en 2026",b:tbl(["Para qué","Herramientas de referencia","Ojo con"],[["Texto, ideas, análisis","ChatGPT, Gemini, Claude, Copilot","Datos inventados: verifica cada cifra"],["Investigación con fuentes","Perplexity, modos de investigación de los asistentes","Revisa que la fuente diga lo que la IA dice que dice"],["Imagen","Adobe Firefly, Midjourney, generadores integrados en ChatGPT y Gemini","Derechos, personas reales, estética genérica"],["Video generativo","Google Veo 3.1, Kling 3.0, Runway Gen-4.5","Costo, consistencia, rotulado obligatorio"],["Avatares y doblaje","HeyGen, Synthesia","Nunca simular a un trabajador o vecino real"],["Edición","Premiere Pro, CapCut, Descript (subtítulos, cortes, limpieza de audio)","Revisar subtítulos automáticos"]])+`<p class="muted">El mercado cambia rápido: OpenAI cerró su app de video Sora en 2026 y el espacio quedó repartido entre Google, Kling, Runway y otros.</p>`,src:[S.vidia,S.sora]},
+ {k:"IA",t:"Reglas éticas mínimas para contenido ESG",b:ul("No generes cifras, certificaciones ni testimonios: si no está en una fuente verificable, no se publica.","No uses personas sintéticas como si fueran trabajadores, vecinos o beneficiarios reales.","Rotula el contenido generado o alterado con IA de forma visible.","Revisa sesgos: ¿quién aparece y quién no en las imágenes generadas?","Protege datos: nada confidencial ni personal en herramientas no autorizadas.","Una persona con nombre y cargo responde por cada pieza publicada.")+call("Pregunta de control","Si mañana un periodista pregunta cómo hiciste esta pieza, ¿te sentirías cómodo explicándolo?")},
+ {k:"Taller · 20 min",t:"Un dato, tres públicos, tres piezas",b:`<p class="lead">En grupos, tomen un dato real del reporte de sostenibilidad de una empresa chilena (o del suyo) y usen una IA para crear:</p>`+cols(box("Para trabajadores","Un mensaje de WhatsApp o un guion de 30 segundos para que lo grabe un líder de turno."),box("Para la comunidad vecina","Una publicación para el grupo de Facebook del barrio o un audio para radio local."),box("Para LinkedIn","Un post en primera persona de un ejecutivo o especialista."))+`<p>Compartan el prompt que usaron, lo que la IA hizo bien y lo que tuvieron que corregir.</p>`},
+ {k:"Síntesis",t:"Lo que nos llevamos",b:steps(["Gancho","Los primeros dos segundos deciden."],["Traducción","Cifra + contexto + fuente + fecha, en el lenguaje de cada público."],["Rostro humano","Las personas cercanas generan más confianza que la marca."],["Formato nativo","Cada plataforma tiene su idioma."],["IA declarada","Herramienta para producir mejor, nunca para inventar."])+`<p class="muted">Próxima clase: armamos todo en una estrategia y presento el trabajo final.</p>`},
+]},
+
+{ id:"c3", n:3, title:"De la idea a la estrategia", sub:"Cómo estructurar una estrategia de comunicación digital sobre sostenibilidad: públicos, mensajes, plataformas, contenidos, pauta, KPIs y riesgos. Cierra con el trabajo final.",
+slides:[
+ {cover:1,k:"Clase 3 de 3",t:"De la idea a la estrategia",b:`<div class="bignum">03</div><p class="lead">Ordenar todo lo visto en un plan que se pueda ejecutar, medir y defender.</p>`},
+ {k:"Encuesta",t:"El público más difícil",poll:{id:"c3_publico",q:"Desde un área de comunicaciones, ¿cuál es el público más difícil para hablar de sostenibilidad?",o:["Los propios trabajadores","La comunidad vecina a la operación","Inversionistas y reguladores","La opinión pública y los medios","Una audiencia global o internacional","Los clientes o consumidores"],ref:"No hay respuesta correcta: cada público exige plataforma, tono, vocero y métrica distintos. Eso es lo que vamos a ordenar hoy."}},
+ {k:"Modelo",t:"Diez pasos de una estrategia",b:steps(["Diagnóstico","Dónde estamos"],["Públicos","A quién hablamos"],["Objetivos","Qué queremos lograr"],["Mensajes","Qué decimos a cada uno"],["Plataformas","Dónde y con qué rol"],["Contenidos","Pilares, formatos y calendario"],["Voces","Voceros, creadores, trabajadores"],["Pauta","Inversión y segmentación"],["KPIs","Cómo sabremos si funcionó"],["Riesgos","Qué puede salir mal y cómo responder"])+`<p class="muted">Es la misma estructura que pide el trabajo final.</p>`},
+ {k:"Paso 1",t:"Diagnóstico: antes de comunicar, entender",b:cols(box("Materialidad","¿Qué temas ESG son relevantes para el negocio y para su entorno? La doble materialidad mira ambas direcciones: cómo el entorno afecta a la empresa y cómo la empresa afecta al entorno."),box("Escucha","¿Qué se dice hoy de la organización? Comentarios, prensa local, búsquedas, y qué responde una IA cuando preguntas por ella."),box("Auditoría de canales","¿Qué cuentas existen, quién las administra, qué rendimiento tienen, qué está abandonado?"),box("Referentes","Tres organizaciones que lo hacen bien y tres que lo hacen mal en tu sector."))+call("Pregunta clave","¿Hay algo real que contar? Si la acción no existe o no se puede probar, el problema no es de comunicación.")},
+ {k:"Paso 2",t:"Los públicos de una empresa",b:tbl(["Público","Qué le importa","Canal probable","Vocero creíble"],[["Trabajadores y contratistas","Seguridad, estabilidad, orgullo, beneficios concretos","WhatsApp, pantallas, intranet, reuniones de turno, video corto","Jefaturas directas y compañeros"],["Comunidad vecina","Agua, aire, ruido, empleo local, respeto","Grupos de Facebook, radio local, WhatsApp, encuentros presenciales","Vecinos, dirigentes, trabajadores locales"],["Clientes y consumidores","Precio, calidad, coherencia de la marca","Instagram, TikTok, YouTube, punto de venta","Creadores, usuarios reales"],["Inversionistas y reguladores","Riesgo, cumplimiento, datos comparables","Web, reporte, LinkedIn","Gerencia, expertos, verificadores"],["Opinión pública y medios","Impacto, contradicciones, historias","X, Threads, LinkedIn, prensa","Voceros entrenados, terceros independientes"],["Audiencia global y diversa","Estándares, contexto, verificabilidad","LinkedIn, YouTube, web en inglés","Especialistas y alianzas internacionales"]])},
+ {k:"Paso 3",t:"Objetivos que se pueden medir",b:`<p>Un objetivo útil es específico, medible, alcanzable, relevante y con plazo (SMART), y apunta a una etapa del recorrido del público.</p>`+tbl(["Etapa","Ejemplo de objetivo"],[["Conocer","Que 60% de los trabajadores conozca el programa de reciclaje en 3 meses (encuesta interna)"],["Considerar","Duplicar las visitas a la página de sostenibilidad desde redes en el semestre"],["Actuar","300 inscritos de la comunidad en visitas guiadas al año"],["Defender","Que 50 trabajadores compartan contenido del programa en LinkedIn en 6 meses"]])+call("Evita","«Posicionar la marca como sustentable». No se puede medir y suena a greenwashing.")},
+ {k:"Paso 4",t:"Un mismo hecho, cuatro traducciones",b:`<p>Hecho: <b>la planta redujo 30% su consumo de agua fresca en dos años gracias a la recirculación.</b></p>`+tbl(["Público","Mensaje","Formato"],[["Trabajadores","«Esto lo lograron ustedes: el equipo de mantención cuenta cómo»","Video de 45 s en el grupo de WhatsApp y pantallas de casino"],["Comunidad","«Usamos menos agua del río. Te mostramos dónde y cómo puedes verificarlo»","Visita guiada abierta, post en el grupo del barrio, audio para radio"],["Inversionistas","«−30% de intensidad hídrica 2023–2025, verificado por tercero; meta 2028: −45%»","Carrusel en LinkedIn y enlace al reporte"],["Público global","«Cómo una planta en el desierto de Atacama recircula su agua»","Mini documental en YouTube con subtítulos en inglés"]])+call("Lo que no cambia","El dato, la fuente y el reconocimiento de lo pendiente. Cambian el lenguaje, el formato y el vocero.")},
+ {k:"Paso 5",t:"Elegir plataformas: rol antes que presencia",b:ul("<b>¿Está ahí mi público?</b> Usa datos (DataReportal, estudios locales, tus propias métricas), no intuiciones.","<b>¿Qué rol cumple?</b> Descubrimiento, profundidad, conversación, comunidad o conversión.","<b>¿Puedo sostenerla?</b> Una cuenta abandonada comunica peor que no tener cuenta.","<b>¿Qué formato exige?</b> TikTok sin video no existe; LinkedIn sin personas rinde poco.","<b>¿Cómo se conecta con lo propio?</b> Web y reporte como fuente verificable a la que todo apunta, también para la IA.")+call("Recuerda","WhatsApp y los encuentros presenciales también son parte de la estrategia digital cuando el público es interno o local."),src:[S.drcl]},
+ {k:"Paso 6",t:"Plan de contenidos",b:cols(box("Pilares","Tres o cuatro temas que ordenan todo. Por ejemplo: agua, personas, comunidad, cómo lo medimos."),box("Mezcla","Contenido educativo, historias humanas, rendición de cuentas y conversación. No todo puede ser logro."),box("Calendario","Frecuencia realista por plataforma, fechas relevantes (Día del Agua, Día del Medio Ambiente, publicación del reporte) y espacio para lo reactivo."))+tbl(["Semana","Instagram","LinkedIn","WhatsApp interno"],[["1","Reel: un día con la bióloga","Post del gerente: por qué medimos el agua","Audio del jefe de planta"],["2","Carrusel: cómo funciona la recirculación","Carrusel con datos verificados","Foto del equipo que lo logró"],["3","Historias: encuesta «¿cuánto crees que bajamos?»","Video corto de una trabajadora","Invitación a visita familiar"],["4","Live: preguntas de la comunidad","Enlace al reporte y lo que falta","Resultados y agradecimiento"]])},
+ {k:"Paso 7 y 8",t:"Voces y pauta",b:cols(box("Voces",ul("Programa de embajadores internos con capacitación y libertad","Creadores locales o divulgadores con afinidad real","Voceros entrenados para comentarios difíciles")),box("Pauta pagada",ul("Meta Ads: segmentación geográfica fina para comunidades","TikTok Ads: alcance joven y local","LinkedIn Ads: públicos profesionales y por cargo","Google Ads: captar búsquedas sobre la empresa y el tema")))+call("Presupuesto chico","Mejor pocas piezas excelentes con pauta que muchas piezas sin distribución. Promociona lo que ya funcionó orgánicamente.")},
+ {k:"Encuesta",t:"Lo que medimos hoy",poll:{id:"c3_kpi",q:"¿Qué indicador reporta hoy tu área a la gerencia sobre redes sociales?",o:["Seguidores","Alcance e impresiones","Interacciones o engagement","Tráfico a la web","Conversiones (inscripciones, postulaciones, ventas)","Percepción o sentimiento","Ninguno de forma regular"],ref:"Seguidores y alcance son métricas de vanidad si no se conectan con un objetivo. La pregunta es qué cambió en el público."}},
+ {k:"Paso 9",t:"KPIs que dicen algo",b:tbl(["Objetivo","KPI principal","Herramienta"],[["Conocer","Alcance en el público objetivo, recordación (encuesta)","Métricas nativas, encuesta interna o comunitaria"],["Atención","Tiempo de visualización, retención, guardados","Instagram, TikTok, YouTube"],["Confianza","Sentimiento de comentarios, preguntas respondidas, menciones","Escucha social, revisión manual"],["Acción","Clics, inscripciones, visitas, postulaciones","GA4, formularios, enlaces con UTM"],["Defensa","Contenido compartido por trabajadores, envíos por mensaje","LinkedIn, Instagram"],["Visibilidad en IA","Qué responden ChatGPT, Gemini o AI Overviews sobre la empresa","Revisión mensual con preguntas fijas"]])+call("Nuevo en 2026","Como gran parte de las búsquedas no genera clic, conviene revisar periódicamente qué dicen las IA sobre tu organización y si citan tus fuentes."),src:[S.spark]},
+ {k:"Paso 10",t:"Riesgos: lista anti-greenwashing",b:ul("¿La afirmación es específica? Evita «verde», «eco», «sustentable» sin respaldo.","¿Es verificable? Fuente, metodología, fecha y, si existe, verificación de un tercero.","¿Es completa? No destaca un logro escondiendo un impacto mayor.","¿Compensar se presenta como reducir? Son cosas distintas.","¿Coincide con el reporte oficial y con lo que vive la comunidad?","¿Hay protocolo si la critican? Quién responde, en cuánto tiempo y con qué datos.")+call("Protocolo básico de crisis","Escuchar → reconocer → informar con datos → corregir si corresponde → volver a informar. Nunca borrar comentarios críticos legítimos."),src:[S.klm,S.blab]},
+ {k:"Trabajo final",t:"El encargo",b:`<p class="lead">Diseñar una estrategia de comunicación digital para uno de tres casos ficticios de organizaciones que enfrentan un desafío ESG.</p>`+ul("Elige uno de los tres casos (los ves completos en la pestaña <b>Trabajo final</b>).","Sigue los diez pasos de la clase.","Desarrolla al menos tres piezas de contenido de ejemplo, para públicos distintos.","Si usas IA, declara para qué y muestra uno de tus prompts.","Sé creativo: se valoran ideas que no se le ocurrirían a cualquiera, siempre con los pies en la tierra.")},
+ {k:"Trabajo final",t:"Los tres casos",b:`<div class="cases">${'{{CASES_SHORT}}'}</div>`},
+ {k:"Encuesta",t:"¿Qué caso eliges?",poll:{id:"c3_caso",q:"Hoy, ¿qué caso te tienta más?",o:["Nodo Pampa: centro de datos y agua","Ruta Austral: buses eléctricos y conductoras","Cooperativa Los Ulmos: lechería y relevo generacional","Todavía no lo sé"],ref:"Si un caso queda con pocos interesados, puede ser una buena oportunidad para destacar."}},
+ {k:"Cierre",t:"Gracias",b:`<p class="lead">Comunicar sostenibilidad en 2026 es demostrar, traducir y conversar.</p>`+ul("Las fuentes de todo lo mencionado están en la pestaña <b>Fuentes</b>.","Este sitio queda disponible para repasar y para hacer el trabajo.","Dudas sobre el trabajo: por el canal que indique el profesor.")},
+]}
+];
+
+/* ---------- CASOS ---------- */
+const CASES=[
+ {id:"A",name:"Nodo Pampa",tag:"Tecnología · Región Metropolitana",esg:"ES",short:"Un centro de datos que necesita agua para enfriar servidores en una comuna con escasez hídrica.",
+  ctx:"Nodo Pampa es una empresa chilena que construye un centro de datos en una comuna rural al norte de Santiago para dar servicios de nube e inteligencia artificial. El proyecto contempla un sistema de enfriamiento que reduce el uso de agua en 70% frente al diseño original, energía 100% renovable contratada y un fondo concursable para proyectos de agua potable rural.",
+  chal:"Antes de la aprobación del proyecto hubo protestas: vecinos y agricultores temen que la empresa compita por el agua. En redes circula un video viral que compara su consumo con el de toda la comuna, con cifras desactualizadas. La empresa nunca ha tenido cuentas en redes.",
+  pub:"Vecinos y agricultores de la comuna · Trabajadores de la construcción y futuros técnicos (muchos de la zona) · Clientes corporativos y comunidad tecnológica · Autoridades y medios nacionales",
+  data:"Consumo proyectado de agua por año y su origen · Reducción frente al diseño original · Contratos de energía renovable · 120 empleos permanentes, 40% comprometidos para la comuna · Monto anual del fondo de agua potable rural",
+  budget:"CLP 3.000.000 al mes para pauta y producción durante 6 meses.",
+  trap:"Responder al video viral con un tono defensivo o con publicidad corporativa. Hablar de «la nube» como algo inmaterial.",
+  q:"¿Cómo se gana la confianza de una comunidad que llegó primero a la conversación y con desconfianza?"},
+ {id:"B",name:"Ruta Austral",tag:"Transporte · Santiago a Puerto Montt",esg:"ES",short:"Una empresa de buses interurbanos que incorpora buses eléctricos y forma a mujeres como conductoras.",
+  ctx:"Ruta Austral es una empresa familiar con 45 años y 300 buses que une Santiago con el sur. Incorporó 40 buses eléctricos en tramos regionales y lanzó una escuela gratuita de conducción profesional para mujeres: hoy 8% de su dotación de conductores son mujeres y la meta es 25% en 2029.",
+  chal:"Su público histórico es mayor de 50 y compra en el terminal. Los jóvenes eligen avión barato o auto compartido. Internamente, parte de los conductores veteranos mira con recelo a las nuevas conductoras y a los buses eléctricos. La empresa tiene un Facebook desactualizado y mala reputación en reseñas por atrasos.",
+  pub:"Pasajeros jóvenes de 18 a 30 años (estudiantes que viajan al sur) · Conductores y mecánicos actuales · Mujeres que podrían postular a la escuela · Pasajeros frecuentes mayores de 50",
+  data:"Emisiones evitadas por bus eléctrico al año (estimadas con metodología declarada) · 32 egresadas de la escuela · Puntualidad mejorada de 71% a 84% en el último año · Precio promedio del pasaje frente al avión",
+  budget:"CLP 2.000.000 al mes para pauta y producción durante 6 meses.",
+  trap:"Usar a las conductoras como decorado de campaña sin darles voz real. Prometer «viajes cero emisiones» cuando 87% de la flota sigue siendo diésel.",
+  q:"¿Cómo se comunican dos cambios a la vez a públicos que no se parecen en nada, sin descuidar el problema de servicio que todos ven?"},
+ {id:"C",name:"Cooperativa Los Ulmos",tag:"Agroalimentos · Región de Los Ríos",esg:"ESG",short:"Una cooperativa lechera de pequeños productores con biodigestores, gobernanza democrática y un problema de relevo generacional.",
+  ctx:"Los Ulmos agrupa a 280 pequeños productores de leche y fabrica quesos y mantequilla que se venden en supermercados del sur. Instaló biodigestores que transforman el guano en energía y fertilizante en 60 predios, obtuvo una certificación de bienestar animal y se gobierna con un socio, un voto. El promedio de edad de los socios es 58 años.",
+  chal:"Los jóvenes de las familias socias se van a la ciudad y la cooperativa necesita nuevos socios y trabajadores. En Santiago nadie conoce la marca, y en el retail compite con marcas grandes que usan imágenes de vacas felices sin respaldo. Hay tensiones internas entre socios que quieren modernizarse y otros que desconfían de las redes.",
+  pub:"Hijos e hijas de socios de 18 a 30 años · Socios actuales, muchos sin redes sociales · Consumidores urbanos de Santiago y Concepción · Compradores del retail y tiendas especializadas",
+  data:"Predios con biodigestor y energía generada al año · Certificación de bienestar animal vigente · Precio pagado al productor frente al promedio regional · Votación de la última asamblea · Programa de becas para hijos de socios",
+  budget:"CLP 1.500.000 al mes para pauta y producción durante 6 meses.",
+  trap:"Competir en la estética de la vaca feliz sin mostrar evidencia. Hablar a los jóvenes con el tono de los socios mayores, o viceversa.",
+  q:"¿Cómo una organización con una historia auténtica logra que la escuchen en un mercado lleno de promesas verdes sin respaldo?"}
+];
+const ESGTAG=e=>`<div class="esg">${["E","S","G"].map(x=>`<span class="${e.includes(x)?"on":""}">${x}</span>`).join("")}</div>`;
+const caseShort=c=>`<div class="case"><span class="tag">Caso ${c.id} · ${c.tag}</span><h3>${c.name}</h3>${ESGTAG(c.esg)}<p>${c.short}</p></div>`;
+const caseFull=c=>`<div class="case"><span class="tag">Caso ${c.id} · ${c.tag}</span><h3>${c.name}</h3>${ESGTAG(c.esg)}<dl><dt>Contexto</dt><dd>${c.ctx}</dd><dt>El desafío</dt><dd>${c.chal}</dd><dt>Públicos</dt><dd>${c.pub}</dd><dt>Datos disponibles</dt><dd>${c.data}</dd><dt>Presupuesto</dt><dd>${c.budget}</dd><dt>La trampa a evitar</dt><dd>${c.trap}</dd><dt>Pregunta guía</dt><dd><b>${c.q}</b></dd></dl></div>`;
+CLASSES[2].slides.forEach(s=>{ if(s.b&&s.b.includes("{{CASES_SHORT}}")) s.b=s.b.replace("{{CASES_SHORT}}",CASES.map(caseShort).join("")); });
+
+const TRABAJO=`<div class="page wrap">
+ <div class="chead" style="padding-top:0"><span class="eyebrow">Trabajo final del módulo</span><h1>Estrategia de comunicación digital ESG</h1><p>Elige uno de los tres casos ficticios y diseña una estrategia completa, creativa y ejecutable. Puedes completar los datos que falten, siempre que lo declares y sea verosímil.</p></div>
+ <section><h2>Los casos</h2><div class="cases">${CASES.map(caseFull).join("")}</div></section>
+ <section><h2>Qué debes entregar</h2>
+ ${steps(["Diagnóstico","Contexto, temas materiales, escucha inicial y auditoría o propuesta de canales."],["Públicos","Al menos tres públicos, con un arquetipo descrito para cada uno: qué le importa, dónde está, en quién confía."],["Objetivos","Dos a cuatro objetivos SMART ligados a etapas del recorrido."],["Mensajes","Mensaje central y su traducción a cada público, con el dato que lo respalda."],["Plataformas","Qué plataformas, con qué rol y por qué; incluye canales internos o presenciales si aplica."],["Contenidos","Pilares, calendario de un mes y tres piezas de ejemplo desarrolladas (guion, maqueta o prototipo) para públicos distintos."],["Voces","Voceros internos, creadores o aliados y cómo se trabajará con ellos."],["Pauta","Distribución del presupuesto del caso por plataforma y objetivo."],["KPIs","Indicadores por objetivo, metas y cómo se medirán."],["Riesgos","Revisión anti-greenwashing de tus mensajes y protocolo frente a una crisis probable."])}
+ ${call("Uso de IA","Puedes usar IA en cualquier etapa. Incluye un anexo breve con las herramientas usadas, para qué, un prompt de ejemplo y qué corregiste. Ninguna cifra puede provenir solo de una IA.")}
+ <p><b>Formato:</b> presentación de 12 a 18 láminas o documento equivalente, más las tres piezas de ejemplo. Modalidad individual o en grupos, y fecha de entrega, según indique el profesor.</p></section>
+ <section><h2>Cómo se evalúa</h2>${tbl(["Criterio","Qué se busca","Peso"],[["Diagnóstico y públicos","Comprensión del caso y de cada público, con datos","20%"],["Coherencia estratégica","Objetivos, mensajes, plataformas y KPIs conectados entre sí","25%"],["Creatividad y contenidos","Ideas originales, piezas bien ejecutadas y nativas de cada plataforma","25%"],["Rigor ESG","Sin greenwashing, transparente con lo pendiente, riesgos bien pensados","20%"],["Presentación y uso responsable de IA","Claridad, orden, fuentes citadas, IA declarada","10%"]])}</section>
+ <section><h2>Preguntas frecuentes</h2>${ul("<b>¿Puedo inventar datos?</b> Puedes completar datos del caso si son verosímiles y lo declaras. No inventes estadísticas del mundo real: cítalas.","<b>¿Tengo que usar todas las plataformas?</b> No. Se valora más elegir bien y justificar que estar en todas.","<b>¿Las piezas deben ser profesionales?</b> Deben comunicar la idea con claridad: un guion bien escrito o una maqueta hecha con el celular sirve.","<b>¿Puedo cambiar el caso?</b> Consulta con el profesor si quieres proponer una variante.")}</section>
+</div>`;
+
+/* ---------- render ---------- */
+const TABS=[...CLASSES.map(c=>({id:c.id,label:"Clase "+c.n})),{id:"trabajo",label:"Trabajo final"},{id:"fuentes",label:"Fuentes"}];
+const esc=s=>String(s).replace(/[&<>"]/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
+const pad=n=>String(n).padStart(2,"0");
+
+function pollHTML(p){
+  return `<div class="poll" data-poll="${p.id}"><p class="pq">${esc(p.q)}</p><div class="opts">${p.o.map((o,i)=>`<button class="opt" data-i="${i}"><span class="fill"></span><span class="lbl">${esc(o)}</span><span class="pct"></span></button>`).join("")}</div><div class="pmeta"><span class="pcount">Conectando…</span></div>${p.ref?`<p class="pref hidden-ref"><b>Dato de referencia</b>${esc(p.ref)}</p>`:""}</div>`;
+}
+function slideHTML(c,s,i){
+  const media=(s.vid||[]).length?`<div class="media">${s.vid.map(([l,u])=>`<a href="${u}" target="_blank" rel="noopener"><span class="ic">▶</span>${esc(l)}</a>`).join("")}</div>`:"";
+  const src=(s.src||[]).length?`<div class="src"><b>Fuentes</b>${s.src.map(([l,u])=>`<a href="${u}" target="_blank" rel="noopener">${esc(l)}</a>`).join("")}</div>`:"";
+  return `<article class="slide${s.cover?" cover":""}${s.poll?" is-poll":""}" id="${c.id}-${i+1}"><div class="shead"><span class="num">${c.n}.${pad(i+1)}</span><span class="kick">${esc(s.k)}</span><button class="from" data-from="${c.id}:${i}" title="Presentar desde esta lámina">Presentar desde aquí ▸</button></div><h2>${s.t}</h2><div class="sb">${s.b||""}${s.poll?pollHTML(s.poll):""}${media}</div>${src}</article>`;
+}
+function renderClass(c){
+  return `<div class="wrap"><div class="chead"><span class="eyebrow">Clase ${c.n} de 3 · ${c.slides.length} láminas · ${c.slides.filter(s=>s.poll).length} encuestas</span><h1>${c.title}</h1><p>${c.sub}</p><div class="cactions"><button class="btn" data-from="${c.id}:0">▶ Presentar clase ${c.n}</button></div>
+  <details class="toc"><summary>Índice de la clase</summary><ol>${c.slides.map((s,i)=>`<li><a href="#${c.id}-${i+1}" data-jump="${c.id}-${i+1}"><span class="n">${c.n}.${pad(i+1)}</span>${s.t}</a>${s.poll?'<span class="pq">encuesta</span>':""}</li>`).join("")}</ol></details></div>
+  <div class="slides">${c.slides.map((s,i)=>slideHTML(c,s,i)).join("")}</div></div>`;
+}
+function renderSources(){
+  const seen=new Map();
+  CLASSES.forEach(c=>c.slides.forEach(s=>(s.src||[]).forEach(([l,u])=>{ if(!seen.has(u)) seen.set(u,{l,cls:new Set()}); seen.get(u).cls.add(c.n); })));
+  const vids=[]; CLASSES.forEach(c=>c.slides.forEach(s=>(s.vid||[]).forEach(v=>vids.push([...v,c.n]))));
+  return `<div class="page wrap"><div class="chead" style="padding-top:0"><span class="eyebrow">Referencias</span><h1>Fuentes y material</h1><p>Todo lo citado en las tres clases, para revisar el dato en su origen. Las cifras de plataformas son estimaciones con metodologías distintas: compáralas con cautela.</p></div>
+  <section><h2>Estudios, artículos y documentos</h2><ol class="srclist">${[...seen.entries()].map(([u,{l,cls}])=>`<li><a href="${u}" target="_blank" rel="noopener">${esc(l)}</a> <span class="cl">Clase ${[...cls].join(", ")}</span></li>`).join("")}</ol></section>
+  <section><h2>Videos y ejemplos</h2><div class="media">${vids.map(([l,u,n])=>`<a href="${u}" target="_blank" rel="noopener"><span class="ic">▶</span>${esc(l)} · C${n}</a>`).join("")}</div></section></div>`;
+}
+const main=document.getElementById("main"), tabsEl=document.getElementById("tabs");
+let current="c1";
+function showTab(id,push){
+  if(!TABS.find(t=>t.id===id)) id="c1";
+  current=id;
+  tabsEl.innerHTML=TABS.map(t=>`<button role="tab" aria-selected="${t.id===id}" data-tab="${t.id}">${t.label}</button>`).join("");
+  const c=CLASSES.find(x=>x.id===id);
+  main.innerHTML=c?renderClass(c):id==="trabajo"?TRABAJO:renderSources();
+  if(push!==false){ try{ history.replaceState(null,"","#"+id); }catch(e){} }
+  window.scrollTo(0,0); refreshPolls(); if(P.voter) watchPolls();
+}
+tabsEl.addEventListener("click",e=>{const b=e.target.closest("[data-tab]"); if(b) showTab(b.dataset.tab);});
+main.addEventListener("click",e=>{
+  const j=e.target.closest("[data-jump]"); if(j){ e.preventDefault(); document.getElementById(j.dataset.jump)?.scrollIntoView({behavior:"smooth"}); return; }
+});
+document.addEventListener("click",e=>{
+  const f=e.target.closest("[data-from]"); if(f){ const [cid,i]=f.dataset.from.split(":"); openStage(cid,+i); return; }
+  const o=e.target.closest(".opt"); if(o){ const p=o.closest("[data-poll]"); vote(p.dataset.poll,+o.dataset.i); return; }
+  const r=e.target.closest(".reset"); if(r){ resetPoll(r.dataset.reset); return; }
+  const cp=e.target.closest("[data-copy]"); if(cp){ const el=document.getElementById(cp.dataset.copy); const txt=el.innerText.replace(/^Copiar\s*/,"").replace(/^Copiado\s*/,"");
+    const done=()=>{cp.textContent="Copiado"; setTimeout(()=>cp.textContent="Copiar",1600);};
+    try{ navigator.clipboard.writeText(txt).then(done,()=>{selectText(el);}); }catch(err){ selectText(el); } }
+});
+function selectText(el){ const r=document.createRange(); r.selectNodeContents(el); const s=getSelection(); s.removeAllRanges(); s.addRange(r); }
+
+/* ---------- presenter ---------- */
+const stage=document.getElementById("stage"), stageIn=document.getElementById("stageIn");
+let sc=null, si=0;
+function openStage(cid,i){ sc=CLASSES.find(c=>c.id===cid); if(!sc) return; si=i; stage.hidden=false; document.body.style.overflow="hidden"; drawStage(); document.getElementById("sNext").focus(); }
+function drawStage(){
+  const s=sc.slides[si]; stageIn.innerHTML=slideHTML(sc,s,si);
+  document.getElementById("stageBody").scrollTop=0;
+  document.getElementById("pos").textContent=`Clase ${sc.n} · ${si+1} / ${sc.slides.length}`;
+  document.getElementById("prog").style.width=((si+1)/sc.slides.length*100)+"%";
+  refreshPolls(); if(P.voter) watchPolls();
+}
+function go(d){ if(!sc) return; const n=si+d; if(n<0||n>=sc.slides.length) return; si=n; drawStage(); }
+function closeStage(){ stage.hidden=true; document.body.style.overflow=""; if(document.fullscreenElement) document.exitFullscreen().catch(()=>{});
+  if(sc){ if(current!==sc.id) showTab(sc.id); else watchPolls(); document.getElementById(`${sc.id}-${si+1}`)?.scrollIntoView(); } sc=null; }
+document.getElementById("sPrev").onclick=()=>go(-1);
+document.getElementById("sNext").onclick=()=>go(1);
+document.getElementById("sExit").onclick=closeStage;
+document.getElementById("sFull").onclick=()=>{ try{ (document.fullscreenElement?document.exitFullscreen():stage.requestFullscreen()).catch(()=>{}); }catch(e){} };
+document.addEventListener("keydown",e=>{
+  if(stage.hidden) return;
+  if(["ArrowRight","PageDown"].includes(e.key)||(e.key===" "&&!e.target.closest("button"))){ e.preventDefault(); go(1); }
+  else if(["ArrowLeft","PageUp"].includes(e.key)){ e.preventDefault(); go(-1); }
+  else if(e.key==="Escape"&&!document.fullscreenElement){ closeStage(); }
+  else if(e.key==="f"||e.key==="F"){ document.getElementById("sFull").click(); }
+});
+let tx=null; stage.addEventListener("touchstart",e=>{tx=e.touches[0].clientX},{passive:true});
+stage.addEventListener("touchend",e=>{ if(tx==null) return; const dx=e.changedTouches[0].clientX-tx; if(Math.abs(dx)>70) go(dx<0?1:-1); tx=null; });
+
+/* ---------- encuestas en vivo (función de Netlify + Blobs) ---------- */
+const API="/api/votes";
+const P={mode:"connecting",tallies:{},mine:{},voter:null,admin:null,onScreen:new Set(),obs:null};
+const ls={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
+function newId(){ try{ return crypto.randomUUID().replace(/-/g,""); }catch(e){ return (Date.now().toString(36)+Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2)).slice(0,32); } }
+function setStatus(mode,text){ P.mode=mode; const el=document.getElementById("status"); el.dataset.s=mode; el.querySelector("span").textContent=text; }
+function saveMine(){ ls.set("esg-mis-votos",JSON.stringify(P.mine)); }
+function myVote(pid){ const v=P.mine[pid], t=P.tallies[pid]; if(!v) return null; if(t&&(v.r||0)!==t.round) return null; return v.o; }
+function refreshPolls(){
+  document.querySelectorAll("[data-poll]").forEach(el=>{
+    const pid=el.dataset.poll, t=P.tallies[pid], c=(t&&t.counts)||{}, total=(t&&t.total)||0, mv=myVote(pid);
+    const showRes=!!t&&(mv!==null||!!P.admin);
+    el.classList.toggle("answered",mv!==null); el.classList.toggle("owner",!!P.admin);
+    el.querySelectorAll(".opt").forEach(b=>{
+      const i=+b.dataset.i, n=c[i]||0, pct=total?Math.round(n/total*100):0;
+      b.classList.toggle("mine",mv===i);
+      b.querySelector(".fill").style.width=showRes?pct+"%":"0%";
+      b.querySelector(".pct").textContent=showRes?`${pct}% · ${n}`:"";
+    });
+    let txt;
+    if(P.mode==="offline") txt=mv===null?"Sin conexión con el servidor de votación. Reintentando…":"Tu respuesta quedó marcada; se enviará cuando vuelva la conexión.";
+    else if(!t) txt="Cargando resultados…";
+    else if(mv===null&&!P.admin) txt=`Vota para ver los resultados · ${total} ${total===1?"voto":"votos"} hasta ahora`;
+    else txt=`${total} ${total===1?"voto":"votos"} · en vivo`;
+    el.querySelector(".pmeta").innerHTML=`<span>${esc(txt)}</span>${P.admin?`<button class="reset" data-reset="${pid}">Reiniciar encuesta</button>`:""}`;
+  });
+}
+async function api(method,body,query){
+  const opt={method,cache:"no-store",headers:{}};
+  if(body){ opt.headers["content-type"]="application/json"; opt.body=JSON.stringify(body); }
+  if(P.admin) opt.headers["x-profe-key"]=P.admin;
+  const r=await fetch(API+(query||""),opt);
+  const data=await r.json().catch(()=>({}));
+  if(!r.ok){ const e=new Error(data.error||("HTTP "+r.status)); e.status=r.status; throw e; }
+  return data;
+}
+async function fetchTallies(ids){
+  ids=[...new Set(ids)].slice(0,12); if(!ids.length) return;
+  try{
+    const d=await api("GET",null,"?polls="+ids.join(","));
+    Object.assign(P.tallies,d.tallies||{});
+    if(P.mode!=="live") setStatus("live","Encuestas en vivo");
+    flushPending();
+  }catch(e){ setStatus("offline","Encuestas sin conexión"); }
+  refreshPolls();
+}
+let flushing=false;
+async function flushPending(){
+  if(flushing) return; flushing=true;
+  try{ for(const [pid,v] of Object.entries(P.mine)){ if(v.pending) await sendVote(pid,v.o); } }finally{ flushing=false; }
+}
+async function sendVote(pid,i){
+  try{
+    const d=await api("POST",{poll:pid,option:i,voter:P.voter});
+    if(d.tally){ P.tallies[pid]=d.tally; P.mine[pid]={o:i,r:d.tally.round}; saveMine(); }
+    if(P.mode!=="live") setStatus("live","Encuestas en vivo");
+  }catch(e){
+    if(e.status>=400&&e.status<500){ delete P.mine[pid]; saveMine(); }
+    else setStatus("offline","Encuestas sin conexión");
+  }
+  refreshPolls();
+}
+function vote(pid,i){
+  const t=P.tallies[pid];
+  P.mine[pid]={o:i,r:t?t.round:0,pending:true}; saveMine(); refreshPolls();
+  sendVote(pid,i);
+}
+async function resetPoll(pid){
+  if(!P.admin) return;
+  try{ const d=await api("POST",{action:"reset",poll:pid}); if(d.tally) P.tallies[pid]=d.tally; }
+  catch(e){ if(e.status===401){ P.admin=null; ls.del("esg-profe"); } }
+  refreshPolls();
+}
+function watchPolls(){
+  if(P.obs) P.obs.disconnect();
+  P.onScreen.clear();
+  const els=[...document.querySelectorAll("[data-poll]")];
+  if(!("IntersectionObserver" in window)){ els.forEach(e=>P.onScreen.add(e.dataset.poll)); fetchTallies([...P.onScreen]); return; }
+  P.obs=new IntersectionObserver(entries=>{
+    const fresh=[];
+    entries.forEach(en=>{ const id=en.target.dataset.poll; if(en.isIntersecting){ if(!P.onScreen.has(id)) fresh.push(id); P.onScreen.add(id); } else P.onScreen.delete(id); });
+    if(fresh.length) fetchTallies(fresh);
+  },{rootMargin:"200px 0px"});
+  els.forEach(e=>P.obs.observe(e));
+}
+async function initPolls(){
+  try{ P.mine=JSON.parse(ls.get("esg-mis-votos")||"{}")||{}; }catch(e){ P.mine={}; }
+  P.voter=ls.get("esg-votante"); if(!P.voter||!/^[A-Za-z0-9]{8,40}$/.test(P.voter)){ P.voter=newId(); ls.set("esg-votante",P.voter); }
+  const url=new URL(location.href), k=url.searchParams.get("profe");
+  if(k){ ls.set("esg-profe",k); url.searchParams.delete("profe"); try{ history.replaceState(null,"",url.pathname+url.search+url.hash); }catch(e){} }
+  const key=ls.get("esg-profe");
+  if(key){ P.admin=key; try{ await api("POST",{action:"check"}); }catch(e){ if(e.status===401){ P.admin=null; ls.del("esg-profe"); } } }
+  watchPolls();
+  setInterval(()=>{ if(!document.hidden&&P.onScreen.size) fetchTallies([...P.onScreen]); },4000);
+}
+
+const h=(location.hash||"").slice(1).split("-")[0];
+showTab(TABS.find(t=>t.id===h)?h:"c1",false);
+if(location.hash.includes("-")) setTimeout(()=>document.getElementById(location.hash.slice(1))?.scrollIntoView(),50);
+initPolls();
+</script>
+
+</body>
+</html>
