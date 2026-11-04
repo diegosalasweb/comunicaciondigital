@@ -282,6 +282,40 @@ tr:last-child td{border-bottom:0}
  img{max-height:90mm}
 }
 
+
+/* botiquín IA */
+.kit .lead{font-size:1.12rem;color:var(--ink);max-width:68ch}
+.kit .chead p{max-width:70ch;margin:.6em 0 0}
+.kfilter{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 18px}
+.kfilter button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-size:.86rem;font-weight:700;color:var(--muted);display:inline-flex;align-items:center;gap:6px}
+.kfilter button .ico{color:var(--accent)}
+.kfilter button.on{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.kfilter button.on .ico{color:var(--surface)}
+.kgroup{margin-top:22px}
+.kgh{font-size:1.15rem;display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.kgh .ico{color:var(--accent);width:22px;height:22px}
+.kgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
+.kcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.kcard.kstar{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.kcard header{display:flex;align-items:flex-start;gap:12px}
+.kcard header > div{min-width:0;flex:1}
+.kic{width:40px;height:40px;border-radius:10px;background:var(--soft);color:var(--accent);display:grid;place-items:center;flex:none}
+.kic .ico{width:22px;height:22px}
+.kcard h3{font-size:1.15rem;line-height:1.15}
+.kby{font-size:.78rem;color:var(--muted)}
+.kplan{font-family:var(--f-mono);font-size:.66rem;letter-spacing:.04em;text-transform:uppercase;border:1px solid var(--line);border-radius:4px;padding:2px 6px;color:var(--muted);white-space:nowrap}
+.kcard p{margin:0;font-size:.93rem}
+.kx{margin:0;padding-left:1.1em;font-size:.86rem;display:grid;gap:4px}
+.kx li::marker{color:var(--accent)}
+.kuse{background:var(--soft);border-radius:8px;padding:9px 11px}
+.kuse b,.kwarn b{display:block;font-family:var(--f-mono);font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-bottom:2px}
+.knote{font-size:.82rem!important;color:var(--muted)}
+.kwarn{background:var(--pollen-soft);border-radius:8px;padding:9px 11px;font-size:.86rem!important}
+.kwarn b{color:var(--pollen)}
+.kgo{margin-top:auto;align-self:flex-start;display:inline-flex;align-items:center;gap:6px;font-weight:700;text-decoration:none;border:1px solid var(--ink);color:var(--ink);border-radius:999px;padding:7px 14px;font-size:.88rem}
+.kgo:hover{background:var(--ink);color:var(--surface)}
+@media print{ .kfilter{display:none!important} .kgroup[hidden]{display:block!important} .kcard{break-inside:avoid} .kgo::after{content:" " attr(href);font-weight:400;font-size:.8em} .kit .chead{break-after:auto} }
+
 @media (prefers-reduced-motion:reduce){ *{transition:none!important;scroll-behavior:auto!important} }
 </style>
 </head>
@@ -607,8 +641,94 @@ const TRABAJO=`<div class="page wrap">
  <section><h2>Preguntas frecuentes</h2>${ul("<b>¿Tengo que producir las piezas?</b> No. Se describen en texto, con el detalle suficiente para que otra persona las produzca.","<b>¿Puedo inventar datos?</b> Puedes completar datos del caso si son verosímiles y lo declaras. Las estadísticas del mundo real se citan.","<b>¿Cómo estimo los costos de la pauta?</b> Con supuestos razonables (puedes usar los planificadores de Meta o Google) y explicando cómo ajustarías después de las primeras semanas.","<b>¿Tengo que usar todas las plataformas?</b> No. Se valora más elegir bien y justificar.","<b>¿Puedo cambiar el caso?</b> Consulta con el profesor si quieres proponer una variante.")}</section>
 </div>`;
 
+/* ---------- BOTIQUÍN IA ---------- */
+Object.assign(ICO,{
+ image:'<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.8"/><path d="m21 16-5-5-9 9"/>',
+ wave:'<path d="M3 12h2M7 8v8M11 5v14M15 9v6M19 7v10M21 12h0"/>',
+ check:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.9-3.9"/><path d="m8.2 11 2 2 3.6-3.6"/>',
+ doc:'<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/><circle cx="11" cy="13.5" r="2.6"/><path d="m13 15.5 2 2"/>',
+ arrow:'<path d="M7 17 17 7M9 7h8v8"/>',
+});
+const KIT_CATS=[
+ ["asistentes","Asistentes","bot"],["investigar","Investigar documentos","doc"],["audio","Audio y transcripción","wave"],["imagen","Imagen","image"],["video","Video","play"],["reportes","Reportes y datos","bars"],["verificar","Verificación","check"],["esg","ESG y clima","leaf"],
+];
+const KIT=[
+ /* Asistentes */
+ {cat:"asistentes",n:"ChatGPT",by:"OpenAI",url:"https://chatgpt.com",plan:"Gratis y pago",d:"El asistente más usado del mundo: redacta, resume, traduce, analiza planillas y genera imágenes. Tiene búsqueda web con fuentes y modo de investigación profunda.",use:"Pasar una nota de prensa a cinco formatos: post de LinkedIn, guion de Reel, mail a vecinos, titular SEO y pregunta frecuente."},
+ {cat:"asistentes",n:"Gemini",by:"Google",url:"https://gemini.google.com",plan:"Gratis y pago",d:"Asistente de Google conectado a Gmail, Drive, Docs y YouTube. Genera imágenes (Nano Banana) y video (Veo), y tiene modo de investigación profunda.",use:"Pedirle que resuma un video largo de YouTube con marcas de tiempo, o que busque datos en tus documentos de Drive."},
+ {cat:"asistentes",n:"Claude",by:"Anthropic",url:"https://claude.ai",plan:"Gratis y pago",star:1,d:"Destaca en escritura, análisis de documentos largos y trabajo en varios pasos. Crea documentos, presentaciones, planillas y páginas web listos para compartir, y puede investigar en la web con fuentes.",use:"Subir un reporte de sostenibilidad de 200 páginas y pedir un resumen por público, con las cifras y la página de donde salen.",x:[["Claude (web, escritorio y celular)","El asistente, con proyectos, investigación y archivos que se pueden publicar y compartir.","https://claude.ai"],["Modelos","Opus (el más capaz), Sonnet (equilibrio) y Haiku (rápido). Se eligen dentro de la app.",""],["Claude Code","Para programar y automatizar tareas en tu computador. Con él se construyó este sitio.","https://claude.com/product/claude-code"],["Claude en Chrome","Extensión que navega y completa tareas en sitios web por ti.","https://claude.com/chrome"],["Claude para Microsoft 365","Dentro de Word, Excel y PowerPoint.",""]]},
+ {cat:"asistentes",n:"Grok",by:"xAI",url:"https://grok.com",plan:"Gratis limitado y pago",d:"Asistente integrado en X, con acceso a lo que se publica en tiempo real. Genera imágenes y video con Grok Imagine.",use:"Pedirle en X el contexto de un tema en tendencia o un resumen de la conversación sobre una marca.",x:[["Grok en X","En la app de X aparece el ícono de Grok en las publicaciones y en el menú: se le puede pedir contexto o un resumen. Muchas personas lo etiquetan en respuestas para preguntar «¿es cierto?».","https://x.com/i/grok"]],warn:"Ha difundido errores y en diciembre de 2025 generó imágenes prohibidas; la Comisión Europea abrió una investigación. No lo uses como verificador."},
+ {cat:"asistentes",n:"Perplexity",by:"Perplexity AI",url:"https://www.perplexity.ai",plan:"Gratis y pago",d:"Buscador conversacional: cada respuesta trae sus fuentes numeradas. Su navegador Comet, gratuito, resume páginas y hace tareas mientras navegas.",use:"Una primera búsqueda sobre un tema nuevo para saber qué se ha publicado y quién lo dijo, antes de ir a las fuentes originales.",x:[["Comet","Navegador con IA de Perplexity.","https://www.perplexity.ai/comet"]]},
+ {cat:"asistentes",n:"Manus",by:"Manus (Meta)",url:"https://manus.im",plan:"Créditos gratis y pago",d:"Agente autónomo: le das un objetivo y planifica, navega por la web, investiga y entrega un informe, una presentación o un sitio. Meta lo compró en diciembre de 2025 y sigue operando.",use:"«Haz un catastro de las 10 empresas mineras de Chile con reporte de sostenibilidad 2025 y compara sus metas de agua.» Luego revisa cada dato.",warn:"Trabaja solo por varios minutos: revisa siempre las fuentes que usó."},
+ {cat:"asistentes",n:"Microsoft Copilot",by:"Microsoft",url:"https://copilot.microsoft.com",plan:"Gratis y pago",d:"Asistente de Microsoft, integrado en Word, Excel, PowerPoint, Outlook y Teams en las cuentas corporativas.",use:"Resumir un hilo largo de correos o generar la primera versión de una presentación desde un documento de Word."},
+ {cat:"asistentes",n:"Meta AI",by:"Meta",url:"https://www.meta.ai",plan:"Gratis",d:"Asistente dentro de WhatsApp, Instagram y Facebook. Útil para entender cómo verán tus contenidos las personas que lo usan sin salir de esas apps.",use:"Preguntarle por tu organización desde WhatsApp para ver qué responde."},
+ /* Investigar */
+ {cat:"investigar",n:"NotebookLM",by:"Google",url:"https://notebooklm.google.com",plan:"Gratis y pago",star:1,d:"Subes tus fuentes (PDF, reportes, sitios, videos de YouTube, transcripciones) y responde solo con base en ellas, citando el párrafo exacto. Crea resúmenes en audio tipo podcast y en video en más de 80 idiomas, incluido el español, además de mapas mentales y guías.",use:"Cargar la memoria anual, el reporte de sostenibilidad y tres notas de prensa de una empresa, y preguntar: «¿Qué metas de emisiones no se cumplieron?»."},
+ {cat:"investigar",n:"Pinpoint",by:"Google Journalist Studio",url:"https://journaliststudio.google.com/pinpoint/",plan:"Gratis para periodistas",d:"Herramienta de Google para investigar grandes volúmenes de documentos: busca en miles de PDF, correos, audios y fotos, reconoce personas, organizaciones y lugares, y transcribe.",use:"Revisar cientos de documentos de una solicitud de transparencia o de un expediente ambiental."},
+ {cat:"investigar",n:"Consensus",by:"Consensus",url:"https://consensus.app",plan:"Gratis y pago",d:"Buscador de estudios científicos revisados por pares que resume qué dice la evidencia.",use:"«¿Qué dice la ciencia sobre la efectividad de los créditos de carbono?» con estudios enlazados."},
+ /* Audio */
+ {cat:"audio",n:"TurboScribe",by:"TurboScribe",url:"https://turboscribe.ai",plan:"Gratis limitado y pago",d:"Transcribe entrevistas y reuniones en español con buena precisión, separando hablantes.",use:"Transcribir una entrevista de una hora y luego pasarla a NotebookLM o Claude para extraer citas."},
+ {cat:"audio",n:"ElevenLabs",by:"ElevenLabs",url:"https://elevenlabs.io",plan:"Gratis limitado y pago",d:"Voces sintéticas muy realistas, doblaje a otros idiomas y efectos de sonido.",use:"Doblar al inglés un video de la empresa para un público internacional, con la autorización de quien habla.",warn:"Nunca clones la voz de una persona sin su permiso por escrito."},
+ {cat:"audio",n:"Descript",by:"Descript",url:"https://www.descript.com",plan:"Gratis limitado y pago",d:"Edita audio y video editando el texto de la transcripción. Elimina muletillas y mejora el sonido.",use:"Editar un episodio de videopodcast y sacar los clips para redes."},
+ /* Imagen */
+ {cat:"imagen",n:"Nano Banana (en Gemini)",by:"Google",url:"https://gemini.google.com",plan:"Gratis y pago",d:"El generador y editor de imágenes de Gemini. Muy bueno para editar fotos con instrucciones y mantener personajes coherentes.",use:"Crear una ilustración para un carrusel explicativo sobre recirculación de agua."},
+ {cat:"imagen",n:"Adobe Firefly",by:"Adobe",url:"https://firefly.adobe.com",plan:"Créditos gratis y pago",d:"Generador de imágenes y video de Adobe, entrenado con contenido con licencia. Integrado en Photoshop y Premiere.",use:"Extender el fondo de una foto institucional para adaptarla a formato vertical."},
+ {cat:"imagen",n:"Midjourney",by:"Midjourney",url:"https://www.midjourney.com",plan:"Pago",d:"Referente en calidad estética para ilustración, concept art y moodboards.",use:"Explorar estilos visuales antes de encargar una campaña a un diseñador."},
+ {cat:"imagen",n:"Ideogram",by:"Ideogram",url:"https://ideogram.ai",plan:"Gratis y pago",d:"Destaca en imágenes con texto legible: afiches, portadas, tipografía.",use:"Borradores de afiches para un evento comunitario."},
+ {cat:"imagen",n:"Canva",by:"Canva",url:"https://www.canva.com",plan:"Gratis y pago",d:"Diseño para no diseñadores con herramientas de IA: genera imágenes, quita fondos, adapta piezas a cada red y traduce diseños.",use:"Adaptar una misma pieza a historias, post cuadrado y portada de LinkedIn en un clic."},
+ /* Video */
+ {cat:"video",n:"Google Vids",by:"Google",url:"https://vids.google.com",plan:"Gratis y pago",star:1,d:"Editor de video en el navegador para hacer explicadores y presentaciones en video a partir de un documento o una idea. Incluye clips generados con Veo, música, voz en off, plantillas y publicación directa en YouTube.",use:"Convertir un informe en un video explicativo de 2 minutos para trabajadores.",note:"Con cualquier cuenta de Google: 10 clips de Veo gratis al mes (8 s, 720p). Los avatares son solo para cuentas pagas de Workspace."},
+ {cat:"video",n:"Flow (Veo)",by:"Google",url:"https://labs.google/flow",plan:"Pago",d:"Herramienta de Google para hacer escenas y cortos con Veo, su modelo de video con audio.",use:"Generar planos de apoyo (b-roll) imposibles de grabar, siempre rotulados como IA."},
+ {cat:"video",n:"Kling",by:"Kuaishou",url:"https://klingai.com",plan:"Créditos gratis y pago",d:"Generador de video muy realista a partir de texto o imagen.",use:"Animar una ilustración o una foto de archivo para un Reel."},
+ {cat:"video",n:"Runway",by:"Runway",url:"https://runwayml.com",plan:"Créditos gratis y pago",d:"Generación y edición de video con IA para equipos creativos.",use:"Cambiar el fondo o el clima de una toma, o generar transiciones."},
+ {cat:"video",n:"HeyGen",by:"HeyGen",url:"https://www.heygen.com",plan:"Gratis limitado y pago",d:"Avatares que hablan y traducción de video con sincronización de labios.",use:"Traducir un mensaje del gerente a otros idiomas para filiales, con su autorización.",warn:"Rotula siempre el contenido como generado con IA."},
+ {cat:"video",n:"CapCut",by:"ByteDance",url:"https://www.capcut.com",plan:"Gratis y pago",d:"Editor para video vertical: subtítulos automáticos, plantillas, recortes de video largo a clips.",use:"Subtitular y cortar en clips una entrevista para TikTok y Reels."},
+ /* Reportes */
+ {cat:"reportes",n:"Gamma",by:"Gamma",url:"https://gamma.app",plan:"Gratis y pago",d:"Crea presentaciones, documentos y sitios de una página a partir de un texto o un esquema.",use:"Pasar el resumen de un reporte a una presentación para el directorio en minutos."},
+ {cat:"reportes",n:"Napkin",by:"Napkin AI",url:"https://www.napkin.ai",plan:"Gratis y pago",d:"Convierte un texto en diagramas, esquemas e infografías editables.",use:"Visualizar el proceso de reciclaje de una planta para un carrusel."},
+ {cat:"reportes",n:"Datawrapper",by:"Datawrapper",url:"https://www.datawrapper.de",plan:"Gratis y pago",d:"El estándar de las salas de prensa para gráficos y mapas claros, accesibles e insertables en la web. No es IA, pero es el complemento ideal.",use:"Publicar en el sitio web el gráfico de consumo de agua de los últimos cinco años."},
+ {cat:"reportes",n:"Flourish",by:"Canva",url:"https://flourish.studio",plan:"Gratis y pago",d:"Visualizaciones animadas e interactivas: rankings que avanzan en el tiempo, mapas, historias con datos.",use:"Un gráfico animado de la evolución de las emisiones para redes."},
+ /* Verificación */
+ {cat:"verificar",n:"Detector SynthID (en Gemini)",by:"Google",url:"https://gemini.google.com",plan:"Gratis",d:"En la app de Gemini puedes subir una imagen o un video y preguntar si fue creado con IA de Google: detecta su marca de agua invisible SynthID.",use:"Revisar una imagen viral antes de compartirla.",warn:"Solo detecta contenido hecho con herramientas de Google. Que no encuentre la marca no prueba que sea real."},
+ {cat:"verificar",n:"InVID-WeVerify",by:"AFP y socios europeos",url:"https://weverify.eu/verification-plugin/",plan:"Gratis",d:"Extensión de navegador para verificar videos e imágenes: extrae fotogramas, busca imágenes inversas, lee metadatos y detecta manipulaciones.",use:"Saber si un video de una supuesta emergencia ambiental es de otro año u otro lugar."},
+ {cat:"verificar",n:"Fact Check Explorer",by:"Google",url:"https://toolbox.google.com/factcheck/explorer",plan:"Gratis",d:"Busca verificaciones ya publicadas por medios de todo el mundo sobre una afirmación o una imagen.",use:"Revisar si una cifra que circula sobre tu sector ya fue desmentida."},
+ {cat:"verificar",n:"TinEye y Google Lens",by:"TinEye · Google",url:"https://tineye.com",plan:"Gratis",d:"Búsqueda inversa de imágenes: dónde apareció antes una foto y en qué versiones.",use:"Encontrar el origen de una foto antes de usarla.",x:[["Google Lens","Búsqueda inversa de Google.","https://lens.google"]]},
+ /* ESG */
+ {cat:"esg",n:"ClimateQ&A",by:"Ekimetrics",url:"https://www.climateqa.com",plan:"Gratis",star:1,d:"Asistente que responde preguntas sobre clima y biodiversidad usando solo los informes científicos del IPCC y la IPBES, con referencias.",use:"«¿Qué dice el IPCC sobre el estrés hídrico en zonas mineras?» como punto de partida con fuentes científicas."},
+ {cat:"esg",n:"Climate Policy Radar",by:"Climate Policy Radar",url:"https://app.climatepolicyradar.org",plan:"Gratis",d:"Buscador con IA de miles de leyes, políticas y compromisos climáticos de todos los países, incluido Chile, con los documentos originales.",use:"Comparar cómo regulan Chile y Perú la información climática de las empresas."},
+ {cat:"esg",n:"Our World in Data",by:"Universidad de Oxford y Global Change Data Lab",url:"https://ourworldindata.org",plan:"Gratis",d:"Datos y gráficos confiables sobre emisiones, energía, agua, biodiversidad y desarrollo, descargables y con licencia abierta. No es IA: es la fuente para alimentarla.",use:"Contextualizar las emisiones de Chile frente a la región con un gráfico listo para usar."},
+ {cat:"esg",n:"Climate Watch",by:"World Resources Institute",url:"https://www.climatewatchdata.org",plan:"Gratis",d:"Emisiones por país y sector, y compromisos climáticos (NDC). No es IA.",use:"Revisar la meta climática de Chile y en qué sectores se concentran sus emisiones."},
+ {cat:"esg",n:"Global Forest Watch",by:"World Resources Institute",url:"https://www.globalforestwatch.org",plan:"Gratis",d:"Monitoreo satelital de bosques, incendios y pérdida de cobertura con alertas casi en tiempo real.",use:"Verificar una afirmación de «deforestación cero» en una zona de abastecimiento."},
+];
+function kitCard(t){
+  const cat=KIT_CATS.find(c=>c[0]===t.cat);
+  const extras=(t.x||[]).map(([n,d,u])=>`<li><b>${u?`<a href="${u}" target="_blank" rel="noopener">${esc(n)}</a>`:esc(n)}</b> ${esc(d)}</li>`).join("");
+  return `<article class="kcard" data-cat="${t.cat}">
+   <header><span class="kic">${ic(cat[2])}</span><div><h3>${esc(t.n)}</h3><span class="kby">${esc(t.by)}</span></div><span class="kplan">${esc(t.plan)}</span></header>
+   <p>${esc(t.d)}</p>${extras?`<ul class="kx">${extras}</ul>`:""}
+   <p class="kuse"><b>Para un periodista</b>${esc(t.use)}</p>
+   ${t.note?`<p class="knote">${esc(t.note)}</p>`:""}${t.warn?`<p class="kwarn"><b>Ojo</b>${esc(t.warn)}</p>`:""}
+   <a class="kgo" href="${t.url}" target="_blank" rel="noopener">Abrir ${esc(t.n.split(" (")[0])} ${ic("arrow","sm")}</a></article>`;
+}
+function renderKit(){
+  return `<div class="page wrap kit">
+  <div class="chead" style="padding-top:0"><span class="eyebrow">Recursos del módulo</span><h1>Botiquín de herramientas IA</h1>
+  <p class="lead">Una selección de herramientas de inteligencia artificial para periodistas y equipos de comunicación: para investigar, ordenar documentos, transcribir, escribir mejor, producir imágenes y video, visualizar datos, verificar y trabajar temas de sostenibilidad.</p>
+  <p>La IA no reemplaza el criterio periodístico: acelera el trabajo que ya sabemos hacer. Sirve para leer más rápido un reporte de 200 páginas, encontrar el dato en un expediente, transformar una entrevista en cinco piezas o explorar ideas visuales. No sirve como fuente: inventa datos con total seguridad, reproduce sesgos y puede equivocarse en cifras, nombres y fechas. Úsala como una asistente muy rápida a la que siempre hay que revisarle el trabajo.</p>
+  <p class="muted">Actualizado en noviembre de 2026. Las herramientas, sus precios y sus funciones cambian cada pocas semanas: revisa las condiciones antes de usarlas en tu organización.</p>
+  <div class="cactions"><button class="btn ghost" data-pdf="Botiquín de herramientas IA">${ic("file","sm")} Descargar PDF</button></div></div>
+  <section><h2>Antes de abrir el botiquín</h2>${steps(["Verifica","Cada cifra, cita y nombre se confirma en la fuente original."],["Protege","Nada confidencial, personal o no publicado en herramientas no autorizadas por tu organización."],["Cita","Pide fuentes y ábrelas: que la IA cite algo no significa que diga eso."],["Declara","Rotula el contenido generado o alterado con IA."],["Responde","Una persona con nombre responde por cada pieza publicada."],["Revisa el plan","Las versiones gratuitas a veces usan tus datos para entrenar: revisa la configuración de privacidad."])}</section>
+  <section><h2>Herramientas</h2>
+  <div class="kfilter" role="group" aria-label="Filtrar por categoría"><button class="on" data-kcat="all">Todas · ${KIT.length}</button>${KIT_CATS.map(([id,l,i])=>`<button data-kcat="${id}">${ic(i,"sm")} ${l}</button>`).join("")}</div>
+  ${KIT_CATS.map(([id,l,i])=>`<div class="kgroup" data-group="${id}"><h3 class="kgh">${ic(i,"sm")} ${l}</h3><div class="kgrid">${KIT.filter(t=>t.cat===id).map(kitCard).join("")}</div></div>`).join("")}
+  </section>
+  <section><h2>Un flujo de ejemplo: del reporte de sostenibilidad a tres piezas</h2>${steps(["Leer","NotebookLM o Claude: cargar el reporte y preguntar qué cambió, qué no se cumplió y qué le importa a cada público."],["Verificar","Ir a la página citada y confirmar cada cifra. Contrastar con Our World in Data o Climate Watch."],["Escribir","ChatGPT, Gemini o Claude: borradores por público con la guía de tono de la organización."],["Visualizar","Datawrapper o Napkin para el gráfico; Canva para adaptar formatos."],["Producir video","Google Vids o CapCut para el explicador y los clips, con subtítulos."],["Revisar y declarar","Lista anti-greenwashing, rótulo de IA donde corresponda y una persona que firma."])}
+  ${call("Prompt para empezar","Usa la fórmula de la Clase 2: rol + contexto + tarea + formato + restricciones + ejemplo. La encuentras en la lámina «Cómo pedirle bien a una IA».")}</section>
+  </div>`;
+}
+
 /* ---------- render ---------- */
-const TABS=[...CLASSES.map(c=>({id:c.id,label:"Clase "+c.n})),{id:"trabajo",label:"Trabajo final"},{id:"fuentes",label:"Fuentes"}];
+const TABS=[...CLASSES.map(c=>({id:c.id,label:"Clase "+c.n})),{id:"trabajo",label:"Trabajo final"},{id:"botiquin",label:"Botiquín IA"},{id:"fuentes",label:"Fuentes"}];
 const esc=s=>String(s).replace(/[&<>"]/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
 const pad=n=>String(n).padStart(2,"0");
 
@@ -650,7 +770,7 @@ function showTab(id,push){
   current=id;
   tabsEl.innerHTML=TABS.map(t=>`<button role="tab" aria-selected="${t.id===id}" data-tab="${t.id}">${t.label}</button>`).join("");
   const c=CLASSES.find(x=>x.id===id);
-  main.innerHTML=c?renderClass(c):id==="trabajo"?TRABAJO:renderSources();
+  main.innerHTML=c?renderClass(c):id==="trabajo"?TRABAJO:id==="botiquin"?renderKit():renderSources();
   if(push!==false){ try{ history.replaceState(null,"","#"+id); }catch(e){} }
   window.scrollTo(0,0); refreshPolls(); if(P.voter) watchPolls();
 }
@@ -660,6 +780,7 @@ main.addEventListener("click",e=>{
 });
 document.addEventListener("click",e=>{
   const f=e.target.closest("[data-from]"); if(f){ const [cid,i]=f.dataset.from.split(":"); openStage(cid,+i); return; }
+  const kf=e.target.closest("[data-kcat]"); if(kf){ const v=kf.dataset.kcat; document.querySelectorAll("[data-kcat]").forEach(b=>b.classList.toggle("on",b===kf)); document.querySelectorAll(".kgroup").forEach(g=>{ g.hidden=!(v==="all"||g.dataset.group===v); }); return; }
   const pd=e.target.closest("[data-pdf]"); if(pd){ printPDF(pd.dataset.pdf); return; }
   const o=e.target.closest(".opt"); if(o){ const p=o.closest("[data-poll]"); vote(p.dataset.poll,+o.dataset.i); return; }
   const r=e.target.closest(".reset"); if(r){ resetPoll(r.dataset.reset); return; }
